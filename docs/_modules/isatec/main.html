@@ -1,0 +1,605 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>isatec.main &mdash; iSATec 0.0.15 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> iSATec
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.15
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">iSATec</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">isatec</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">iSATec</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>isatec.main</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for isatec.main</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">WARNING</span><span class="p">,</span> <span class="n">FileHandler</span><span class="p">,</span> <span class="n">getLogger</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">from</span> <span class="nn">wx</span> <span class="kn">import</span> <span class="p">(</span><span class="n">EVT_MENU</span><span class="p">,</span> <span class="n">EVT_MENU_OPEN</span><span class="p">,</span> <span class="n">ID_CLOSE</span><span class="p">,</span> <span class="n">ICON_NONE</span><span class="p">,</span> <span class="n">App</span><span class="p">,</span> <span class="n">Frame</span><span class="p">,</span>
+                <span class="n">LogError</span><span class="p">,</span> <span class="n">NewIdRef</span><span class="p">,</span> <span class="n">wxEVT_CLOSE_WINDOW</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">.const</span> <span class="kn">import</span> <span class="p">(</span><span class="n">APPLICATION_NAME</span><span class="p">,</span> <span class="n">COLOR_MANAGER</span><span class="p">,</span> <span class="n">COLOR_THEME_LIST</span><span class="p">,</span>
+                    <span class="n">DATA_BUFFER_SIZE</span><span class="p">,</span> <span class="n">DATA_MANAGER</span><span class="p">,</span> <span class="n">DECODE_ENCODING</span><span class="p">,</span>
+                    <span class="n">DECODE_MANAGER</span><span class="p">,</span> <span class="n">ENCODE_DELIMITER</span><span class="p">,</span> <span class="n">ENCODE_ENCODING</span><span class="p">,</span>
+                    <span class="n">ENCODE_MANAGER</span><span class="p">,</span> <span class="n">EVENT_LIST</span><span class="p">,</span> <span class="n">EVENT_MANAGER</span><span class="p">,</span>
+                    <span class="n">EVENT_RECEPTOR_CLASS_LIST</span><span class="p">,</span> <span class="n">FUNCTION_CLASS_LIST</span><span class="p">,</span>
+                    <span class="n">FUNCTION_MANAGER</span><span class="p">,</span> <span class="n">LAYOUT_LIST</span><span class="p">,</span> <span class="n">MANAGER_LIST</span><span class="p">,</span>
+                    <span class="n">MAPPING_COLORMAP</span><span class="p">,</span> <span class="n">MAPPING_DIRECTION</span><span class="p">,</span> <span class="n">MAPPING_MANAGER</span><span class="p">,</span>
+                    <span class="n">MAPPING_TABLE_SIZE</span><span class="p">,</span> <span class="n">MENUBAR_MANAGER</span><span class="p">,</span> <span class="n">PANEL_MANAGER</span><span class="p">,</span>
+                    <span class="n">PEAK_FUNCTION_CLASS_LIST</span><span class="p">,</span> <span class="n">PEAK_MANAGER</span><span class="p">,</span> <span class="n">PEAK_TYPE</span><span class="p">,</span>
+                    <span class="n">PERSPECTIVE_SETTING</span><span class="p">,</span> <span class="n">PREFERENCE_MANAGER</span><span class="p">,</span> <span class="n">PROJECT_MANAGER</span><span class="p">,</span>
+                    <span class="n">SELECTED_COLOR_THEME</span><span class="p">,</span> <span class="n">SELECTED_DECODE_FUNCTION</span><span class="p">,</span>
+                    <span class="n">SELECTED_ENCODE_FUNCTION</span><span class="p">,</span> <span class="n">SELECTED_LAYOUT</span><span class="p">,</span>
+                    <span class="n">SELECTED_MAPPING_FUNCTION</span><span class="p">,</span> <span class="n">SETTING_FILE_PATH</span><span class="p">,</span>
+                    <span class="n">SPECTRUM_FUNCTION_PRESET_LIST</span><span class="p">,</span> <span class="n">SPECTRUM_MANAGER</span><span class="p">,</span>
+                    <span class="n">WINDOW_SIZE</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.container</span> <span class="kn">import</span> <span class="n">CustomMenuItemBase</span><span class="p">,</span> <span class="n">PanelBase</span>
+<span class="kn">from</span> <span class="nn">.core</span> <span class="kn">import</span> <span class="n">CommunicableObjectBase</span><span class="p">,</span> <span class="n">SettingStorableObjectBase</span>
+<span class="kn">from</span> <span class="nn">.defaultevent</span> <span class="kn">import</span> <span class="n">ExitEvent</span><span class="p">,</span> <span class="n">LaunchEvent</span>
+<span class="kn">from</span> <span class="nn">.manager</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ColorManager</span><span class="p">,</span> <span class="n">DataManager</span><span class="p">,</span> <span class="n">DecodeManager</span><span class="p">,</span> <span class="n">EncodeManager</span><span class="p">,</span>
+                      <span class="n">EventManager</span><span class="p">,</span> <span class="n">FunctionManager</span><span class="p">,</span> <span class="n">IOManager</span><span class="p">,</span> <span class="n">MappingManager</span><span class="p">,</span>
+                      <span class="n">MenubarManager</span><span class="p">,</span> <span class="n">PanelManager</span><span class="p">,</span> <span class="n">PeakManager</span><span class="p">,</span>
+                      <span class="n">PreferenceManager</span><span class="p">,</span> <span class="n">ProjectManager</span><span class="p">,</span> <span class="n">SpectrumManager</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.objects</span> <span class="kn">import</span> <span class="p">(</span><span class="n">PeakType</span><span class="p">,</span> <span class="n">SpectrumFunctionContainerAccessor</span><span class="p">,</span>
+                      <span class="n">SpectrumFunctionContainerBase</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.util</span> <span class="kn">import</span> <span class="n">DotChain</span><span class="p">,</span> <span class="n">DotNotationDict</span><span class="p">,</span> <span class="n">Singleton</span>
+
+
+<div class="viewcode-block" id="CoreManager"><a class="viewcode-back" href="../../isatec.html#isatec.main.CoreManager">[docs]</a><span class="k">class</span> <span class="nc">CoreManager</span><span class="p">(</span><span class="n">Singleton</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Core manager supervising managers.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">setting_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Default constructor</span>
+
+<span class="sd">        :param setting_file_path: Path to a file to read the settings</span>
+<span class="sd">        :type setting_file_path: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__app</span> <span class="o">=</span> <span class="n">App</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__id</span> <span class="o">=</span> <span class="n">NewIdRef</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span> <span class="o">=</span> <span class="n">IOManager</span><span class="p">(</span><span class="n">setting_file_path</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__public_mgr_dict</span> <span class="o">=</span> <span class="n">DotNotationDict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__temp_setting</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">CommunicableObjectBase</span><span class="o">.</span><span class="n">_core_mgr</span> <span class="o">=</span> <span class="bp">self</span>
+
+        <span class="n">window_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">WINDOW_SIZE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__main_window</span> <span class="o">=</span> <span class="n">MainWindow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">window_size</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__public_mgr_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__CreatePublicManager</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__temp_setting</span><span class="p">[</span><span class="n">MANAGER_LIST</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__public_mgr_dict</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+        <span class="n">SpectrumFunctionContainerBase</span><span class="o">.</span><span class="n">data_accessor</span> <span class="o">=</span> <span class="n">SpectrumFunctionContainerAccessor</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">DATA_MANAGER</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">PEAK_MANAGER</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__InitializePublicManagers</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__RestoreStorableObjSetting</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">InitialTitle</span><span class="p">()</span>
+
+<div class="viewcode-block" id="CoreManager.Launch"><a class="viewcode-back" href="../../isatec.html#isatec.main.CoreManager.Launch">[docs]</a>    <span class="k">def</span> <span class="nf">Launch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">menubar_design</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">setting_file_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">SETTING_FILE_PATH</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Launch iSATec.</span>
+
+<span class="sd">        :param menubar_design: Menu bar design. Please refer to &quot;MenubarManager.GetMenubarDesign&quot;\&#39;s documentation for details. Defaults to None</span>
+<span class="sd">        :type menubar_design: dict, optional</span>
+<span class="sd">        :param setting_file_path: Path to a file to read the settings, defaults to SETTING_FILE_PATH</span>
+<span class="sd">        :type setting_file_path: str, optional</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">menubar_design</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">MENUBAR_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">GetMenubarDesign</span><span class="p">(</span>
+        <span class="p">)</span> <span class="k">if</span> <span class="n">menubar_design</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">menubar_design</span>
+        <span class="n">menubar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">MENUBAR_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">CreateMenubar</span><span class="p">(</span><span class="n">menubar_design</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__main_window</span><span class="o">.</span><span class="n">SetMenuBar</span><span class="p">(</span><span class="n">menubar</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__main_window</span><span class="o">.</span><span class="n">Show</span><span class="p">()</span>
+
+        <span class="n">event</span> <span class="o">=</span> <span class="n">LaunchEvent</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SendEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__app</span><span class="o">.</span><span class="n">MainLoop</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">LogError</span><span class="p">(</span>
+                <span class="s1">&#39;The application did not terminate successfully.</span><span class="se">\n</span><span class="s1">Please check the log file.&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CoreManager.Get"><a class="viewcode-back" href="../../isatec.html#isatec.main.CoreManager.Get">[docs]</a>    <span class="k">def</span> <span class="nf">Get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a reference to the manager.</span>
+
+<span class="sd">        :type key: str</span>
+<span class="sd">        :param default: Return value when the specified key is not found, defaults to None</span>
+<span class="sd">        :type default: Any, optional</span>
+<span class="sd">        :rtype: Any</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__temp_setting</span><span class="p">:</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__temp_setting</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">()</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">func</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__public_mgr_dict</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__public_mgr_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="o">.</span><span class="n">GetSetting</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CoreManager.SendEvent"><a class="viewcode-back" href="../../isatec.html#isatec.main.CoreManager.SendEvent">[docs]</a>    <span class="k">def</span> <span class="nf">SendEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            This function sends an event to an instance of the &quot;PanelBase&quot; class and to the manager.</span>
+<span class="sd">            Note that the event will not be sent until the project is started.</span>
+
+<span class="sd">        :param event: Event object to be sent.</span>
+<span class="sd">        :type event: Any type</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">EVENT_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">SendEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CoreManager.InitialTitle"><a class="viewcode-back" href="../../isatec.html#isatec.main.CoreManager.InitialTitle">[docs]</a>    <span class="k">def</span> <span class="nf">InitialTitle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initializes the title of the main window.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__main_window</span><span class="o">.</span><span class="n">SetTitle</span><span class="p">(</span><span class="n">APPLICATION_NAME</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CoreManager.GetTitle"><a class="viewcode-back" href="../../isatec.html#isatec.main.CoreManager.GetTitle">[docs]</a>    <span class="k">def</span> <span class="nf">GetTitle</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get the title of the current main window.</span>
+
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">full_title</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GetFullTitle</span><span class="p">()</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">full_title</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">full_title</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">full_title</span><span class="p">[</span><span class="n">start</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span> <span class="n">end</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="CoreManager.GetFullTitle"><a class="viewcode-back" href="../../isatec.html#isatec.main.CoreManager.GetFullTitle">[docs]</a>    <span class="k">def</span> <span class="nf">GetFullTitle</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get the title of the main window that is being displayed.</span>
+
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__main_window</span><span class="o">.</span><span class="n">GetTitle</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CoreManager.SetTitle"><a class="viewcode-back" href="../../isatec.html#isatec.main.CoreManager.SetTitle">[docs]</a>    <span class="k">def</span> <span class="nf">SetTitle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets the title of the main window.</span>
+
+<span class="sd">        :type title: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">is_saved</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">PROJECT_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">IsProjectSaved</span><span class="p">()</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">APPLICATION_NAME</span><span class="si">}</span><span class="s1"> -</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s1">- &#39;</span>
+        <span class="n">title</span> <span class="o">+=</span> <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">is_saved</span> <span class="k">else</span> <span class="s1">&#39;(unsaved)&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__main_window</span><span class="o">.</span><span class="n">SetTitle</span><span class="p">(</span><span class="n">title</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__CreatePublicManager</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">design</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">MENUBAR_MANAGER</span><span class="p">,</span> <span class="n">MenubarManager</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">PANEL_MANAGER</span><span class="p">,</span> <span class="n">PanelManager</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">EVENT_MANAGER</span><span class="p">,</span> <span class="n">EventManager</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">FUNCTION_MANAGER</span><span class="p">,</span> <span class="n">FunctionManager</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">ENCODE_MANAGER</span><span class="p">,</span> <span class="n">EncodeManager</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">DECODE_MANAGER</span><span class="p">,</span> <span class="n">DecodeManager</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">MAPPING_MANAGER</span><span class="p">,</span> <span class="n">MappingManager</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">PROJECT_MANAGER</span><span class="p">,</span> <span class="n">ProjectManager</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">PEAK_MANAGER</span><span class="p">,</span> <span class="n">PeakManager</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">DATA_MANAGER</span><span class="p">,</span> <span class="n">DataManager</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">SPECTRUM_MANAGER</span><span class="p">,</span> <span class="n">SpectrumManager</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">COLOR_MANAGER</span><span class="p">,</span> <span class="n">ColorManager</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">PREFERENCE_MANAGER</span><span class="p">,</span> <span class="n">PreferenceManager</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">public_mgr_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">mgr</span> <span class="ow">in</span> <span class="n">design</span><span class="p">:</span>
+            <span class="n">public_mgr_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">mgr</span><span class="p">(</span>
+                <span class="n">core_manager</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">io_manager</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">public_mgr_dict</span>
+
+    <span class="k">def</span> <span class="nf">__InitializePublicManagers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Initialize the manager.</span>
+<span class="sd">            The &#39;Get&#39; function should not be used for anything other than getting the manager, because of the complexity of the reference.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Create the necessary instances for the setting</span>
+        <span class="n">event_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="o">.</span><span class="n">GetSetting</span><span class="p">(</span><span class="n">EVENT_LIST</span><span class="p">)</span>
+        <span class="n">spectrum_preset_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="o">.</span><span class="n">GetSetting</span><span class="p">(</span>
+            <span class="n">SPECTRUM_FUNCTION_PRESET_LIST</span><span class="p">)</span>
+        <span class="n">function_list</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">FuncClass</span><span class="p">()</span> <span class="k">for</span> <span class="n">FuncClass</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="o">.</span><span class="n">GetSetting</span><span class="p">(</span><span class="n">FUNCTION_CLASS_LIST</span><span class="p">)]</span>
+        <span class="n">peak_function_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">([</span><span class="n">PeakFunc</span><span class="p">()</span> <span class="k">for</span> <span class="n">PeakFunc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="o">.</span><span class="n">GetSetting</span><span class="p">(</span>
+            <span class="n">PEAK_FUNCTION_CLASS_LIST</span><span class="p">,</span> <span class="p">[])],</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+        <span class="n">peak_type_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">PeakType</span><span class="p">(</span><span class="n">peak</span><span class="p">)</span> <span class="k">for</span> <span class="n">peak</span> <span class="ow">in</span> <span class="n">peak_function_list</span><span class="p">]</span>
+        <span class="n">peak_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="o">.</span><span class="n">GetSetting</span><span class="p">(</span><span class="n">PEAK_TYPE</span><span class="p">)</span>
+        <span class="n">data_buffer_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="o">.</span><span class="n">GetSetting</span><span class="p">(</span><span class="n">DATA_BUFFER_SIZE</span><span class="p">)</span>
+        <span class="n">selected_encode_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="o">.</span><span class="n">GetSetting</span><span class="p">(</span>
+            <span class="n">SELECTED_ENCODE_FUNCTION</span><span class="p">)</span>
+        <span class="n">selected_decode_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="o">.</span><span class="n">GetSetting</span><span class="p">(</span>
+            <span class="n">SELECTED_DECODE_FUNCTION</span><span class="p">)</span>
+        <span class="n">selected_mapping_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="o">.</span><span class="n">GetSetting</span><span class="p">(</span>
+            <span class="n">SELECTED_MAPPING_FUNCTION</span><span class="p">)</span>
+        <span class="n">encode_encoding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="o">.</span><span class="n">GetSetting</span><span class="p">(</span><span class="n">ENCODE_ENCODING</span><span class="p">)</span>
+        <span class="n">encode_delimiter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="o">.</span><span class="n">GetSetting</span><span class="p">(</span><span class="n">ENCODE_DELIMITER</span><span class="p">)</span>
+        <span class="n">decode_encoding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="o">.</span><span class="n">GetSetting</span><span class="p">(</span><span class="n">DECODE_ENCODING</span><span class="p">)</span>
+        <span class="n">table_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="o">.</span><span class="n">GetSetting</span><span class="p">(</span><span class="n">MAPPING_TABLE_SIZE</span><span class="p">)</span>
+        <span class="n">direction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="o">.</span><span class="n">GetSetting</span><span class="p">(</span><span class="n">MAPPING_DIRECTION</span><span class="p">)</span>
+        <span class="n">cmap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="o">.</span><span class="n">GetSetting</span><span class="p">(</span><span class="n">MAPPING_COLORMAP</span><span class="p">)</span>
+        <span class="n">layout_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="o">.</span><span class="n">GetSetting</span><span class="p">(</span><span class="n">LAYOUT_LIST</span><span class="p">)</span>
+        <span class="n">selected_layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="o">.</span><span class="n">GetSetting</span><span class="p">(</span><span class="n">SELECTED_LAYOUT</span><span class="p">)</span>
+        <span class="n">color_theme_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="o">.</span><span class="n">GetSetting</span><span class="p">(</span><span class="n">COLOR_THEME_LIST</span><span class="p">)</span>
+        <span class="n">selected_color_theme</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="o">.</span><span class="n">GetSetting</span><span class="p">(</span><span class="n">SELECTED_COLOR_THEME</span><span class="p">)</span>
+
+        <span class="n">event_receptor_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">menu_item_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">panel_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">EventReceptor</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="o">.</span><span class="n">GetSetting</span><span class="p">(</span><span class="n">EVENT_RECEPTOR_CLASS_LIST</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">EventReceptor</span><span class="p">,</span> <span class="n">CustomMenuItemBase</span><span class="p">):</span>
+                <span class="n">event_receptor</span> <span class="o">=</span> <span class="n">EventReceptor</span><span class="p">()</span>
+                <span class="n">menu_item_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event_receptor</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">PanelBase</span><span class="p">,</span> <span class="n">PanelBase</span><span class="p">):</span>
+                <span class="n">event_receptor</span> <span class="o">=</span> <span class="n">EventReceptor</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__main_window</span><span class="p">)</span>
+                <span class="n">panel_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event_receptor</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">EventReceptor</span><span class="p">,</span> <span class="n">PanelBase</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">event_receptor</span> <span class="o">=</span> <span class="n">EventReceptor</span><span class="p">()</span>
+
+            <span class="n">event_receptor_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event_receptor</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">MENUBAR_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">RegisterMenuItemList</span><span class="p">(</span><span class="n">menu_item_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">EVENT_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">RegisterEventList</span><span class="p">(</span><span class="n">event_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">PANEL_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">SetMainWindow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__main_window</span><span class="p">)</span>
+        <span class="c1"># PanelClassList = self.__io_mgr.GetSetting(DotChain(PANEL, CLASS_LIST))</span>
+        <span class="c1"># panel_list = self.Get(PANEL_MANAGER).RegisterPanelList(PanelClassList, perspective_setting, self.__main_window)</span>
+        <span class="c1"># event_receptor_list.extend(panel_list)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">PANEL_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">RegisterLayout</span><span class="p">(</span><span class="n">layout_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">PANEL_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">RegisterPanelList</span><span class="p">(</span><span class="n">panel_list</span><span class="p">,</span> <span class="n">selected_layout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">EVENT_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">RegisterEventReceptorList</span><span class="p">(</span><span class="n">event_receptor_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">FUNCTION_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">RegisterFunctionList</span><span class="p">(</span><span class="n">function_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">FUNCTION_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">RegisterPreset</span><span class="p">(</span><span class="n">spectrum_preset_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">FUNCTION_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">SelectEncodeFunction</span><span class="p">(</span><span class="n">selected_encode_func</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">FUNCTION_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">SelectDecodeFunction</span><span class="p">(</span><span class="n">selected_decode_func</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">FUNCTION_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">SelectMappingFunction</span><span class="p">(</span><span class="n">selected_mapping_func</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">PEAK_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">RegisterPeakTypeList</span><span class="p">(</span><span class="n">peak_type_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">PEAK_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">SelectPeakType</span><span class="p">(</span><span class="n">peak_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">ENCODE_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">SelectEncoding</span><span class="p">(</span><span class="n">encode_encoding</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">ENCODE_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">SelectDelimiter</span><span class="p">(</span><span class="n">encode_delimiter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">DECODE_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">SelectEncoding</span><span class="p">(</span><span class="n">decode_encoding</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">MAPPING_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">SelectDirection</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">MAPPING_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">SetTableSize</span><span class="p">(</span><span class="n">table_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">MAPPING_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">SelectColormap</span><span class="p">(</span><span class="n">cmap</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">COLOR_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">RegisterColorThemeList</span><span class="p">(</span><span class="n">color_theme_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">COLOR_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">SelectColorTheme</span><span class="p">(</span><span class="n">selected_color_theme</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">PREFERENCE_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">SetDataBufferSize</span><span class="p">(</span><span class="n">data_buffer_size</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__RestoreStorableObjSetting</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">editor</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__GetEditorList</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">editor</span><span class="p">,</span> <span class="n">SettingStorableObjectBase</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="n">setting</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">editor</span><span class="o">.</span><span class="n">RequireSetting</span><span class="p">():</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="o">.</span><span class="n">IsUnknownSetting</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__temp_setting</span><span class="p">:</span>
+                    <span class="n">register_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__ConvertRegisterKey</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">editor</span><span class="p">)</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">register_key</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+                <span class="n">setting</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+            <span class="n">editor</span><span class="o">.</span><span class="n">ReceiveSetting</span><span class="p">(</span><span class="n">setting</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__StoreStorableObjectSetting</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">editor</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__GetEditorList</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">editor</span><span class="p">,</span> <span class="n">SettingStorableObjectBase</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">editor</span><span class="o">.</span><span class="n">SendSetting</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="o">.</span><span class="n">IsUnknownSetting</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="o">.</span><span class="n">IsCustomSetting</span><span class="p">(</span><span class="n">key</span><span class="p">)):</span>
+                    <span class="k">continue</span>
+
+                <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__ConvertRegisterKey</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">editor</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="o">.</span><span class="n">SetSetting</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CoreManager.SaveSetting"><a class="viewcode-back" href="../../isatec.html#isatec.main.CoreManager.SaveSetting">[docs]</a>    <span class="k">def</span> <span class="nf">SaveSetting</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Save the state of the application.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">event</span> <span class="o">=</span> <span class="n">ExitEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SendEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__StoreStorableObjectSetting</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__io_mgr</span><span class="o">.</span><span class="n">SaveSetting</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">__ConvertRegisterKey</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">editor</span><span class="p">:</span> <span class="n">SettingStorableObjectBase</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">editor</span><span class="p">,</span> <span class="n">SettingStorableObjectBase</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">DotChain</span><span class="p">(</span><span class="n">editor</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__DeConvertRegisterKey</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">editor</span><span class="p">:</span> <span class="n">SettingStorableObjectBase</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">editor</span><span class="p">,</span> <span class="n">SettingStorableObjectBase</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">key</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">editor</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__GetEditorList</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">PANEL_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">GetPanelList</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">MENUBAR_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">GetMenuItemList</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">SettingStorableObjectBase</span><span class="p">)]</span>
+
+<div class="viewcode-block" id="CoreManager.OnEvent"><a class="viewcode-back" href="../../isatec.html#isatec.main.CoreManager.OnEvent">[docs]</a>    <span class="k">def</span> <span class="nf">OnEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event_type</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">GetEventType</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_CLOSE_WINDOW</span><span class="p">:</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">Skip</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__main_window</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="Manager"><a class="viewcode-back" href="../../isatec.html#isatec.main.Manager">[docs]</a><span class="k">class</span> <span class="nc">Manager</span><span class="p">(</span><span class="n">Singleton</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Manager of iSATec</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">setting_file_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">SETTING_FILE_PATH</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Default constructor</span>
+
+<span class="sd">        :param setting_file_path: Path to a file to read the settings, defaults to SETTING_FILE_PATH</span>
+<span class="sd">        :type setting_file_path: str, optional</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__core_manager</span> <span class="o">=</span> <span class="n">CoreManager</span><span class="p">(</span><span class="n">setting_file_path</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Manager.Launch"><a class="viewcode-back" href="../../isatec.html#isatec.main.Manager.Launch">[docs]</a>    <span class="k">def</span> <span class="nf">Launch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Launch iSATec.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__core_manager</span><span class="o">.</span><span class="n">Launch</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Manager.GetMenubarDesign"><a class="viewcode-back" href="../../isatec.html#isatec.main.Manager.GetMenubarDesign">[docs]</a>    <span class="k">def</span> <span class="nf">GetMenubarDesign</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the design of the menu bar.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__core_manager</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">MENUBAR_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">GetMenubarDesign</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Manager.SetMenubarDesign"><a class="viewcode-back" href="../../isatec.html#isatec.main.Manager.SetMenubarDesign">[docs]</a>    <span class="k">def</span> <span class="nf">SetMenubarDesign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">design</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets the design of the menu bar.</span>
+
+<span class="sd">        :param design: Menu bar design. Please refer to &quot;MenubarManager.GetMenubarDesign&quot;\&#39;s documentation for details.</span>
+<span class="sd">        :type design: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__core_manager</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">MENUBAR_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">SetMenubarDesign</span><span class="p">(</span><span class="n">design</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="MainWindow"><a class="viewcode-back" href="../../isatec.html#isatec.main.MainWindow">[docs]</a><span class="k">class</span> <span class="nc">MainWindow</span><span class="p">(</span><span class="n">Frame</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Main window</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">core_manager</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Default constructor</span>
+
+<span class="sd">        :param core_manager: Manager</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__core_mgr</span> <span class="o">=</span> <span class="n">core_manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">EVT_MENU</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__OnEvent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">EVT_MENU_OPEN</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__OnEvent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Show</span><span class="p">()</span>
+
+<div class="viewcode-block" id="MainWindow.SetEventList"><a class="viewcode-back" href="../../isatec.html#isatec.main.MainWindow.SetEventList">[docs]</a>    <span class="k">def</span> <span class="nf">SetEventList</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event_list</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">event_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__OnEvent</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__OnEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">Skip</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__core_mgr</span><span class="o">.</span><span class="n">SendEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">GetId</span><span class="p">()</span> <span class="o">==</span> <span class="n">ID_CLOSE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+
+<div class="viewcode-block" id="MainWindow.Destroy"><a class="viewcode-back" href="../../isatec.html#isatec.main.MainWindow.Destroy">[docs]</a>    <span class="k">def</span> <span class="nf">Destroy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">is_success</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__core_mgr</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">PROJECT_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">AskProjectSaving</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_success</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__core_mgr</span><span class="o">.</span><span class="n">SaveSetting</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="iSATec"><a class="viewcode-back" href="../../isatec.html#isatec.main.iSATec">[docs]</a><span class="k">def</span> <span class="nf">iSATec</span><span class="p">(</span><span class="n">setting_file_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">SETTING_FILE_PATH</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    :param setting_file_path: Path to a file to read the settings, defaults to SETTING_FILE_PATH</span>
+<span class="sd">    :type setting_file_path: str, optional</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">Manager</span><span class="p">(</span><span class="n">setting_file_path</span><span class="o">=</span><span class="n">setting_file_path</span><span class="p">)</span>
+    <span class="n">manager</span><span class="o">.</span><span class="n">Launch</span><span class="p">()</span></div>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;CoreManager&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Manager&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;MainWindow&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;iSATec&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">iSATec</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Ryo Tandai.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

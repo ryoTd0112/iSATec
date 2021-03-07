@@ -1,0 +1,627 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>isatec.defaultmenuitem &mdash; iSATec 0.0.15 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> iSATec
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.15
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">iSATec</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">isatec</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">iSATec</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>isatec.defaultmenuitem</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for isatec.defaultmenuitem</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">random</span>
+
+<span class="kn">from</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">import</span> <span class="n">axis</span><span class="p">,</span> <span class="n">colorbar</span><span class="p">,</span> <span class="n">pcolormesh</span><span class="p">,</span> <span class="n">show</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">inf</span><span class="p">,</span> <span class="n">meshgrid</span>
+<span class="kn">from</span> <span class="nn">wx</span> <span class="kn">import</span> <span class="p">(</span><span class="n">DEFAULT_DIALOG_STYLE</span><span class="p">,</span> <span class="n">FD_FILE_MUST_EXIST</span><span class="p">,</span> <span class="n">FD_OPEN</span><span class="p">,</span> <span class="n">FD_SAVE</span><span class="p">,</span>
+                <span class="n">ICON_NONE</span><span class="p">,</span> <span class="n">ID_CANCEL</span><span class="p">,</span> <span class="n">FileDialog</span><span class="p">,</span> <span class="n">LogError</span><span class="p">,</span> <span class="n">MessageDialog</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">.const</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ABOUT_MENU_ITEM</span><span class="p">,</span> <span class="n">DATA_MANAGER</span><span class="p">,</span> <span class="n">DECODE_MANAGER</span><span class="p">,</span>
+                   <span class="n">ENCODE_MANAGER</span><span class="p">,</span> <span class="n">EXPORT_MENU_ITEM</span><span class="p">,</span> <span class="n">EXPORT_PLUGIN_MENU_ITEM</span><span class="p">,</span>
+                   <span class="n">FUNCTION_MANAGER</span><span class="p">,</span> <span class="n">IMPORT_PLUGIN_MENU_ITEM</span><span class="p">,</span> <span class="n">LAYOUT_MENU</span><span class="p">,</span>
+                   <span class="n">MENUBAR_MANAGER</span><span class="p">,</span> <span class="n">NEW_MENU_ITEM</span><span class="p">,</span> <span class="n">NEW_MENU_ITEM_HELP</span><span class="p">,</span>
+                   <span class="n">OPEN_MENU_ITEM</span><span class="p">,</span> <span class="n">PANEL_MANAGER</span><span class="p">,</span> <span class="n">PREFERENCE_MANAGER</span><span class="p">,</span>
+                   <span class="n">PREFERENCE_MENU_ITEM</span><span class="p">,</span> <span class="n">PROJECT_MANAGER</span><span class="p">,</span>
+                   <span class="n">PROJECT_MEMO_MENU_ITEM</span><span class="p">,</span> <span class="n">SAVE_AS_MENU_ITEM</span><span class="p">,</span> <span class="n">SAVE_MENU_ITEM</span><span class="p">,</span>
+                   <span class="n">SAVEFILE_WILDCARD</span><span class="p">,</span> <span class="n">TUTORIAL_MENU_ITEM</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.container</span> <span class="kn">import</span> <span class="n">CustomNormalMenuItemBase</span>
+<span class="kn">from</span> <span class="nn">.control</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ExportDialog</span><span class="p">,</span> <span class="n">NewDialog</span><span class="p">,</span> <span class="n">PreferenceDialog</span><span class="p">,</span>
+                     <span class="n">ProjectMemoDialog</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.objects</span> <span class="kn">import</span> <span class="n">DEFAULT_PEAK</span><span class="p">,</span> <span class="n">DataContainer</span><span class="p">,</span> <span class="n">Spectrum</span>
+
+
+<div class="viewcode-block" id="NewMenuItem"><a class="viewcode-back" href="../../isatec.html#isatec.defaultmenuitem.NewMenuItem">[docs]</a><span class="k">class</span> <span class="nc">NewMenuItem</span><span class="p">(</span><span class="n">CustomNormalMenuItemBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Menu item for loading a new project</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Default constructor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">NEW_MENU_ITEM</span><span class="p">,</span> <span class="n">NEW_MENU_ITEM_HELP</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NewMenuItem.Function"><a class="viewcode-back" href="../../isatec.html#isatec.defaultmenuitem.NewMenuItem.Function">[docs]</a>    <span class="k">def</span> <span class="nf">Function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;loading a new project</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">encoding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">ENCODE_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">GetEncoding</span><span class="p">()</span>
+        <span class="n">delimiter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">ENCODE_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">GetDelimiter</span><span class="p">()</span>
+        <span class="n">selected_function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">ENCODE_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">GetEncodeFunctionNameContainer</span><span class="p">()</span>
+        <span class="n">encode_function_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">FUNCTION_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">GetEncodeFunctionList</span><span class="p">()</span>
+        <span class="n">data_buffer_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">PREFERENCE_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">GetDataBufferSize</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">NewDialog</span><span class="p">(</span><span class="n">encoding</span><span class="p">,</span> <span class="n">delimiter</span><span class="p">,</span> <span class="n">selected_function</span><span class="p">,</span> <span class="n">encode_function_list</span><span class="p">,</span> <span class="n">data_buffer_size</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;New&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">dialog</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dialog</span><span class="o">.</span><span class="n">ShowModal</span><span class="p">()</span> <span class="o">==</span> <span class="n">ID_CANCEL</span><span class="p">:</span>
+                <span class="k">return</span>
+
+            <span class="n">encoding</span> <span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">GetEncoding</span><span class="p">()</span>
+            <span class="n">delimiter</span> <span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">GetDelimiter</span><span class="p">()</span>
+            <span class="n">selected_function</span> <span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">GetSelectedEncodeFunction</span><span class="p">()</span>
+
+            <span class="n">data_list</span> <span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">GetDataList</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">ENCODE_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">SelectEncoding</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">ENCODE_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">SelectDelimiter</span><span class="p">(</span><span class="n">delimiter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">FUNCTION_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">SelectEncodeFunction</span><span class="p">(</span><span class="n">selected_function</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;error?&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">PROJECT_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">NewProject</span><span class="p">(</span><span class="n">data_list</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="OpenMenuItem"><a class="viewcode-back" href="../../isatec.html#isatec.defaultmenuitem.OpenMenuItem">[docs]</a><span class="k">class</span> <span class="nc">OpenMenuItem</span><span class="p">(</span><span class="n">CustomNormalMenuItemBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Menu item for loading an existing project</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Default constructor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">OPEN_MENU_ITEM</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="OpenMenuItem.Function"><a class="viewcode-back" href="../../isatec.html#isatec.defaultmenuitem.OpenMenuItem.Function">[docs]</a>    <span class="k">def</span> <span class="nf">Function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;loading an existing project</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">FileDialog</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">wildcard</span><span class="o">=</span><span class="n">SAVEFILE_WILDCARD</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="n">FD_OPEN</span> <span class="o">|</span> <span class="n">FD_FILE_MUST_EXIST</span><span class="p">)</span> <span class="k">as</span> <span class="n">dialog</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dialog</span><span class="o">.</span><span class="n">ShowModal</span><span class="p">()</span> <span class="o">==</span> <span class="n">ID_CANCEL</span><span class="p">:</span>
+                <span class="k">return</span>
+
+            <span class="n">path</span> <span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">GetPath</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">PROJECT_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">OpenProject</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="SaveMenuItem"><a class="viewcode-back" href="../../isatec.html#isatec.defaultmenuitem.SaveMenuItem">[docs]</a><span class="k">class</span> <span class="nc">SaveMenuItem</span><span class="p">(</span><span class="n">CustomNormalMenuItemBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Menu item for saving a project</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Default constructor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">SAVE_MENU_ITEM</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SaveMenuItem.Function"><a class="viewcode-back" href="../../isatec.html#isatec.defaultmenuitem.SaveMenuItem.Function">[docs]</a>    <span class="k">def</span> <span class="nf">Function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;saving a project</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">project_mgr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">PROJECT_MANAGER</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">project_mgr</span><span class="o">.</span><span class="n">IsProjectSaved</span><span class="p">():</span>
+            <span class="k">return</span>
+
+        <span class="n">project</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">PROJECT_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">GetProject</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">project</span><span class="o">.</span><span class="n">GetPath</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">MENUBAR_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">ExecuteMenuFunction</span><span class="p">(</span><span class="n">SAVE_AS_MENU_ITEM</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">PROJECT_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">SaveProject</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="SaveMenuItem.OnLaunch"><a class="viewcode-back" href="../../isatec.html#isatec.defaultmenuitem.SaveMenuItem.OnLaunch">[docs]</a>    <span class="k">def</span> <span class="nf">OnLaunch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Enable</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SaveMenuItem.OnProjectLoad"><a class="viewcode-back" href="../../isatec.html#isatec.defaultmenuitem.SaveMenuItem.OnProjectLoad">[docs]</a>    <span class="k">def</span> <span class="nf">OnProjectLoad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Enable</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="SaveAsMenuItem"><a class="viewcode-back" href="../../isatec.html#isatec.defaultmenuitem.SaveAsMenuItem">[docs]</a><span class="k">class</span> <span class="nc">SaveAsMenuItem</span><span class="p">(</span><span class="n">CustomNormalMenuItemBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Menu item to save an unsaved project</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Default constructor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">SAVE_AS_MENU_ITEM</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SaveAsMenuItem.Function"><a class="viewcode-back" href="../../isatec.html#isatec.defaultmenuitem.SaveAsMenuItem.Function">[docs]</a>    <span class="k">def</span> <span class="nf">Function</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;save an unsaved project</span>
+
+<span class="sd">        :return: Whether the project has been saved or not.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">project_mgr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">PROJECT_MANAGER</span><span class="p">)</span>
+        <span class="n">project</span> <span class="o">=</span> <span class="n">project_mgr</span><span class="o">.</span><span class="n">GetProject</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">path</span> <span class="o">:=</span> <span class="n">project</span><span class="o">.</span><span class="n">GetPath</span><span class="p">())</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">project_mgr</span><span class="o">.</span><span class="n">GetDefaultProjectPath</span><span class="p">()</span>
+
+        <span class="n">dir_path</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">GetDirectory</span><span class="p">()</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">GetFileName</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">FileDialog</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">defaultDir</span><span class="o">=</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">defaultFile</span><span class="o">=</span><span class="n">file_name</span><span class="p">,</span> <span class="n">wildcard</span><span class="o">=</span><span class="n">SAVEFILE_WILDCARD</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="n">FD_SAVE</span><span class="p">)</span> <span class="k">as</span> <span class="n">dialog</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dialog</span><span class="o">.</span><span class="n">ShowModal</span><span class="p">()</span> <span class="o">==</span> <span class="n">ID_CANCEL</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="n">path</span> <span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">GetPath</span><span class="p">()</span>
+
+        <span class="n">project</span><span class="o">.</span><span class="n">SetPath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="n">project_mgr</span><span class="o">.</span><span class="n">SaveProject</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="SaveAsMenuItem.OnLaunch"><a class="viewcode-back" href="../../isatec.html#isatec.defaultmenuitem.SaveAsMenuItem.OnLaunch">[docs]</a>    <span class="k">def</span> <span class="nf">OnLaunch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Enable</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SaveAsMenuItem.OnProjectLoad"><a class="viewcode-back" href="../../isatec.html#isatec.defaultmenuitem.SaveAsMenuItem.OnProjectLoad">[docs]</a>    <span class="k">def</span> <span class="nf">OnProjectLoad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Enable</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="ExportMenuItem"><a class="viewcode-back" href="../../isatec.html#isatec.defaultmenuitem.ExportMenuItem">[docs]</a><span class="k">class</span> <span class="nc">ExportMenuItem</span><span class="p">(</span><span class="n">CustomNormalMenuItemBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Menu item for outputting experimental data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Default constructor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">EXPORT_MENU_ITEM</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ExportMenuItem.Function"><a class="viewcode-back" href="../../isatec.html#isatec.defaultmenuitem.ExportMenuItem.Function">[docs]</a>    <span class="k">def</span> <span class="nf">Function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Outputting experimental data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">project</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">PROJECT_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">GetProject</span><span class="p">()</span>
+        <span class="n">encoding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">DECODE_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">GetEncoding</span><span class="p">()</span>
+        <span class="n">selected_function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">FUNCTION_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">GetSelectedDecodeFunction</span><span class="p">()</span>
+        <span class="n">func_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">FUNCTION_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">GetDecodeFunctionList</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">ExportDialog</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">encoding</span><span class="p">,</span> <span class="n">selected_function</span><span class="p">,</span> <span class="n">func_list</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Export&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">dialog</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dialog</span><span class="o">.</span><span class="n">ShowModal</span><span class="p">()</span> <span class="o">==</span> <span class="n">ID_CANCEL</span><span class="p">:</span>
+                <span class="k">return</span>
+
+            <span class="n">selected_function</span> <span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">GetSelectedDecodeFunction</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">FUNCTION_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">SelectDecodeFunction</span><span class="p">(</span><span class="n">selected_function</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ExportMenuItem.OnLaunch"><a class="viewcode-back" href="../../isatec.html#isatec.defaultmenuitem.ExportMenuItem.OnLaunch">[docs]</a>    <span class="k">def</span> <span class="nf">OnLaunch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Enable</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ExportMenuItem.OnProjectLoad"><a class="viewcode-back" href="../../isatec.html#isatec.defaultmenuitem.ExportMenuItem.OnProjectLoad">[docs]</a>    <span class="k">def</span> <span class="nf">OnProjectLoad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Enable</span><span class="p">()</span></div></div>
+
+
+<span class="c1"># class PluginImportMenuItem(CustomNormalMenuItemBase):</span>
+<span class="c1">#     def __init__(self):</span>
+<span class="c1">#         super().__init__(IMPORT_PLUGIN_MENU_ITEM, &#39;&#39;)</span>
+
+<span class="c1">#     def Function(self):</span>
+<span class="c1">#         print(&#39;plugin import&#39;)</span>
+
+
+<span class="c1"># class PluginExportMenuItem(CustomNormalMenuItemBase):</span>
+<span class="c1">#     def __init__(self):</span>
+<span class="c1">#         super().__init__(EXPORT_PLUGIN_MENU_ITEM, &#39;&#39;)</span>
+
+<span class="c1">#     def Function(self):</span>
+<span class="c1">#         print(&#39;plugin export&#39;)</span>
+
+
+<div class="viewcode-block" id="ProjectMemoMenuItem"><a class="viewcode-back" href="../../isatec.html#isatec.defaultmenuitem.ProjectMemoMenuItem">[docs]</a><span class="k">class</span> <span class="nc">ProjectMemoMenuItem</span><span class="p">(</span><span class="n">CustomNormalMenuItemBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Menu item for making notes about the project.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Default constructor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">PROJECT_MEMO_MENU_ITEM</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ProjectMemoMenuItem.Function"><a class="viewcode-back" href="../../isatec.html#isatec.defaultmenuitem.ProjectMemoMenuItem.Function">[docs]</a>    <span class="k">def</span> <span class="nf">Function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Making notes about the project.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">project</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">PROJECT_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">GetProject</span><span class="p">()</span>
+        <span class="n">prev_date</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">GetExperimentalDate</span><span class="p">()</span>
+        <span class="n">prev_note</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">GetNote</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">ProjectMemoDialog</span><span class="p">(</span><span class="n">prev_date</span><span class="p">,</span> <span class="n">prev_note</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="k">as</span> <span class="n">dialog</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dialog</span><span class="o">.</span><span class="n">ShowModal</span><span class="p">()</span> <span class="o">==</span> <span class="n">ID_CANCEL</span><span class="p">:</span>
+                <span class="k">return</span>
+
+            <span class="n">date</span> <span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">GetDate</span><span class="p">()</span>
+            <span class="n">note</span> <span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">GetNote</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">prev_date</span> <span class="o">==</span> <span class="n">date</span> <span class="ow">and</span> <span class="n">prev_note</span> <span class="o">==</span> <span class="n">note</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">PROJECT_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">SetProjectMemo</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">note</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ProjectMemoMenuItem.OnLaunch"><a class="viewcode-back" href="../../isatec.html#isatec.defaultmenuitem.ProjectMemoMenuItem.OnLaunch">[docs]</a>    <span class="k">def</span> <span class="nf">OnLaunch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Enable</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ProjectMemoMenuItem.OnProjectLoad"><a class="viewcode-back" href="../../isatec.html#isatec.defaultmenuitem.ProjectMemoMenuItem.OnProjectLoad">[docs]</a>    <span class="k">def</span> <span class="nf">OnProjectLoad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Enable</span><span class="p">()</span></div></div>
+
+
+<span class="c1"># class FTIR_WarterContentsMappingMenuItem(CustomNormalMenuItemBase):</span>
+<span class="c1">#     def __init__(self):</span>
+<span class="c1">#         super().__init__(&#39;FTIR Warter Mapping&#39;, &#39;&#39;)</span>
+
+<span class="c1">#     def Function(self):</span>
+<span class="c1">#         K = 36.37</span>
+
+<span class="c1">#         data_list = self.Get(PROJECT_MANAGER).GetDataList()</span>
+<span class="c1">#         x_list = [data.X for data in data_list]</span>
+<span class="c1">#         y_list = [data.Y for data in data_list]</span>
+
+<span class="c1">#         self.FTIR_WaterContentMapping(K, x_list, y_list, 4, 3)</span>
+
+<span class="c1">#     def FTIR_WaterContentMapping(self, K, x_list, y_list, cols, rows, direction=&#39;r2d&#39;, cmap=&#39;jet&#39;, clim=(0, None)):</span>
+<span class="c1">#         if not (len(x_list) == len(y_list) == cols * rows):</span>
+<span class="c1">#             LogError(&#39;Map size is incorrect.&#39;)</span>
+<span class="c1">#             return</span>
+
+<span class="c1">#         warter_contents_list = []</span>
+<span class="c1">#         for x, y in zip(x_list, y_list):</span>
+<span class="c1">#             t = self.EstimateThickness(x, y, (1624.9, 2150.1), 1 / 0.6366)</span>
+<span class="c1">#             if t == 0:</span>
+<span class="c1">#                 LogError(&#39;Could not be calculated.\nThe data may not be adequate.&#39;)</span>
+<span class="c1">#             G1 = self.EstimateThickness(x, y, (3414.9, 3653.1))</span>
+<span class="c1">#             G2 = self.EstimateThickness(x, y, (3264.9, 3415.1))</span>
+<span class="c1">#             G3 = self.EstimateThickness(x, y, (3264.9, 3415.1))</span>
+
+<span class="c1">#             warter_contents = self.EstimateWarterContents(K, t, G1, G2, G3)</span>
+<span class="c1">#             warter_contents_list.append(warter_contents)</span>
+
+<span class="c1">#         lower_clim, upper_clim = clim</span>
+<span class="c1">#         if lower_clim is None:</span>
+<span class="c1">#             lower_clim = 0</span>
+<span class="c1">#         if upper_clim is None:</span>
+<span class="c1">#             upper_clim = max(warter_contents_list)</span>
+
+<span class="c1">#         C = array(warter_contents_list).reshape([rows, cols])</span>
+
+<span class="c1">#         x_grid = [i for i in range(cols + 1)]</span>
+<span class="c1">#         y_grid = [i for i in range(rows + 1)]</span>
+<span class="c1">#         X, Y = meshgrid(x_grid, y_grid)</span>
+<span class="c1">#         # coordinate = array([[[x, y] for x in range(cols + 1)] for y in range(rows + 1)])</span>
+<span class="c1">#         pcolormesh(X, Y, C, vmin=lower_clim, vmax=upper_clim, cmap=cmap)</span>
+<span class="c1">#         colorbar()</span>
+<span class="c1">#         axis(&#39;equal&#39;)</span>
+<span class="c1">#         show()</span>
+
+<span class="c1">#     def EstimateThickness(self, xdata, ydata, bounds=(-inf, inf,), rate=1):</span>
+<span class="c1">#         if len(xdata) != len(ydata):</span>
+<span class="c1">#             raise TypeError(&#39;&quot;x&quot; and &quot;y&quot; should be the same length.&#39;)</span>
+
+<span class="c1">#         lower_bound, upper_bound = bounds</span>
+<span class="c1">#         matched_index = [index for index, x in enumerate(xdata) if lower_bound &lt; x &lt; upper_bound]</span>
+
+<span class="c1">#         clipped_xdata = array([xdata[i] for i in matched_index])</span>
+<span class="c1">#         clipped_ydata = array([ydata[i] for i in matched_index])</span>
+
+<span class="c1">#         if len(clipped_xdata) == 0:</span>
+<span class="c1">#             return 0</span>
+
+<span class="c1">#         total_area = sum([abs(y) for y in clipped_ydata])</span>
+
+<span class="c1">#         upper_base = clipped_ydata[-1]</span>
+<span class="c1">#         lower_base = clipped_ydata[0]</span>
+<span class="c1">#         # height = clipped_xdata[-1] - clipped_xdata[0]  # 元のやつだと面積が負になる可能性がある</span>
+<span class="c1">#         height = abs(clipped_xdata[-1] - clipped_xdata[0])</span>
+<span class="c1">#         base_area = (upper_base + lower_base) * height / 2</span>
+
+<span class="c1">#         return (total_area - base_area) * rate</span>
+
+<span class="c1">#     def EstimateWarterContents(self, K, t, G1, G2, G3):</span>
+<span class="c1">#         return 1e5 / t * 3.5 * K * ((G1 / (3780 - 3572)) + (G2 / (3780 - 3328)) + (G3 / (3780 - 3228)))</span>
+
+
+<span class="c1"># class LayoutMenuItem(CustomNormalMenuItemBase):</span>
+<span class="c1">#     def __init__(self):</span>
+<span class="c1">#         super().__init__(LAYOUT_MENU_ITEM, &#39;&#39;)</span>
+
+<span class="c1">#     def Function(self):</span>
+<span class="c1">#         mgr = self.Get(PANEL_MANAGER)</span>
+<span class="c1">#         prev_name, _ = mgr.GetSelectedLayout()</span>
+<span class="c1">#         name_list = mgr.GetLayoutNames()</span>
+
+<span class="c1">#         with RegisterDialog(name_list, mgr, parent=None) as dialog:</span>
+<span class="c1">#             if dialog.ShowModal() == ID_CANCEL:</span>
+<span class="c1">#                 return</span>
+
+<span class="c1">#             name = dialog.GetName()</span>
+
+<span class="c1">#         mgr.RegisterCurrentLayout(name)</span>
+
+
+<div class="viewcode-block" id="AboutMenuItem"><a class="viewcode-back" href="../../isatec.html#isatec.defaultmenuitem.AboutMenuItem">[docs]</a><span class="k">class</span> <span class="nc">AboutMenuItem</span><span class="p">(</span><span class="n">CustomNormalMenuItemBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Menu item to display about this app</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Default constructor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">ABOUT_MENU_ITEM</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="AboutMenuItem.Function"><a class="viewcode-back" href="../../isatec.html#isatec.defaultmenuitem.AboutMenuItem.Function">[docs]</a>    <span class="k">def</span> <span class="nf">Function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">contents</span> <span class="o">=</span> <span class="s1">&#39;Copyright (c) 2021 ryoTd0112&#39;</span>
+        <span class="k">with</span> <span class="n">MessageDialog</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">contents</span><span class="p">,</span> <span class="n">caption</span><span class="o">=</span><span class="s1">&#39;About&#39;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="n">DEFAULT_DIALOG_STYLE</span> <span class="o">|</span> <span class="n">ICON_NONE</span><span class="p">)</span> <span class="k">as</span> <span class="n">dialog</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dialog</span><span class="o">.</span><span class="n">ShowModal</span><span class="p">()</span> <span class="o">==</span> <span class="n">ID_CANCEL</span><span class="p">:</span>
+                <span class="k">return</span></div></div>
+
+
+<div class="viewcode-block" id="TutorialMenuItem"><a class="viewcode-back" href="../../isatec.html#isatec.defaultmenuitem.TutorialMenuItem">[docs]</a><span class="k">class</span> <span class="nc">TutorialMenuItem</span><span class="p">(</span><span class="n">CustomNormalMenuItemBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Menu item to tutorial.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Default constructor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">TUTORIAL_MENU_ITEM</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TutorialMenuItem.Function"><a class="viewcode-back" href="../../isatec.html#isatec.defaultmenuitem.TutorialMenuItem.Function">[docs]</a>    <span class="k">def</span> <span class="nf">Function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">project_mgr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">PROJECT_MANAGER</span><span class="p">)</span>
+        <span class="n">is_success</span> <span class="o">=</span> <span class="n">project_mgr</span><span class="o">.</span><span class="n">AskProjectSaving</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_success</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">data_buffer_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">PREFERENCE_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">GetDataBufferSize</span><span class="p">()</span>
+        <span class="n">amp</span><span class="p">,</span> <span class="n">ctr</span><span class="p">,</span> <span class="n">wid</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">30</span>
+        <span class="n">data_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">peak</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">DEFAULT_PEAK</span><span class="p">)</span>
+
+        <span class="n">peak</span><span class="o">.</span><span class="n">Amp</span> <span class="o">=</span> <span class="n">amp</span>
+        <span class="n">peak</span><span class="o">.</span><span class="n">Wid</span> <span class="o">=</span> <span class="n">wid</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">90</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)))</span>
+            <span class="n">peak</span><span class="o">.</span><span class="n">Ctr</span> <span class="o">=</span> <span class="n">ctr</span> <span class="o">+</span> <span class="n">i</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span> <span class="o">+</span> <span class="p">(</span><span class="n">random</span><span class="p">()</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.05</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">peak</span><span class="o">.</span><span class="n">Execution</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span>
+
+            <span class="n">spectrum</span> <span class="o">=</span> <span class="n">Spectrum</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;./tutorial_data</span><span class="si">{</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="si">:</span><span class="s1">02</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">DataContainer</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">data_buffer_size</span><span class="p">)</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">Append</span><span class="p">(</span><span class="n">spectrum</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
+
+            <span class="n">data_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="n">project_mgr</span><span class="o">.</span><span class="n">NewProject</span><span class="p">(</span><span class="n">data_list</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="PreferenceMenuItem"><a class="viewcode-back" href="../../isatec.html#isatec.defaultmenuitem.PreferenceMenuItem">[docs]</a><span class="k">class</span> <span class="nc">PreferenceMenuItem</span><span class="p">(</span><span class="n">CustomNormalMenuItemBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Menu item for setting application preferences.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Default constructor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">PREFERENCE_MENU_ITEM</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PreferenceMenuItem.Function"><a class="viewcode-back" href="../../isatec.html#isatec.defaultmenuitem.PreferenceMenuItem.Function">[docs]</a>    <span class="k">def</span> <span class="nf">Function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Setting application preferences.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data_buffer_size_container</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">PREFERENCE_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">GetDataBufferSizeContainer</span><span class="p">()</span>
+        <span class="k">with</span> <span class="n">PreferenceDialog</span><span class="p">(</span><span class="n">data_buffer_size_container</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Preference&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">dialog</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dialog</span><span class="o">.</span><span class="n">ShowModal</span><span class="p">()</span> <span class="o">==</span> <span class="n">ID_CANCEL</span><span class="p">:</span>
+                <span class="k">return</span>
+
+            <span class="n">data_buffer_size_container</span> <span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">GetDataBufferSizeContainer</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">PREFERENCE_MANAGER</span><span class="p">)</span><span class="o">.</span><span class="n">SetDataBufferSize</span><span class="p">(</span><span class="n">data_buffer_size_container</span><span class="p">)</span></div></div>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;NewMenuItem&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;OpenMenuItem&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;SaveMenuItem&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;SaveAsMenuItem&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ExportMenuItem&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ProjectMemoMenuItem&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;AboutMenuItem&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;TutorialMenuItem&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;PreferenceMenuItem&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Ryo Tandai.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

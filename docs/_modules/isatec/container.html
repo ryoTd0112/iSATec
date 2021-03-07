@@ -1,0 +1,1051 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>isatec.container &mdash; iSATec 0.0.15 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> iSATec
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.15
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">iSATec</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">isatec</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">iSATec</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>isatec.container</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for isatec.container</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">wx</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ITEM_CHECK</span><span class="p">,</span> <span class="n">ITEM_NORMAL</span><span class="p">,</span> <span class="n">ITEM_RADIO</span><span class="p">,</span> <span class="n">EmptyString</span><span class="p">,</span> <span class="n">MenuItem</span><span class="p">,</span>
+                <span class="n">NewIdRef</span><span class="p">,</span> <span class="n">Panel</span><span class="p">,</span> <span class="n">PyCommandEvent</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">.core</span> <span class="kn">import</span> <span class="p">(</span><span class="n">CommunicableObjectBase</span><span class="p">,</span> <span class="n">SettingStorableObjectBase</span><span class="p">,</span>
+                  <span class="n">iSATecObject</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.defaultevent</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ColorEvent</span><span class="p">,</span> <span class="n">ColormapChangeEvent</span><span class="p">,</span> <span class="n">ColorRegisterEvent</span><span class="p">,</span>
+                          <span class="n">ColorSelectionEvent</span><span class="p">,</span> <span class="n">DataContentsChangeEvent</span><span class="p">,</span>
+                          <span class="n">DataEvent</span><span class="p">,</span> <span class="n">DataSelectionChangeEvent</span><span class="p">,</span> <span class="n">DecodeEvent</span><span class="p">,</span>
+                          <span class="n">DecodeFunctionDeregisterEvent</span><span class="p">,</span>
+                          <span class="n">DecodeFunctionRegisterEvent</span><span class="p">,</span>
+                          <span class="n">DecodeFunctionSelectEvent</span><span class="p">,</span> <span class="n">DirectionChangeEvent</span><span class="p">,</span>
+                          <span class="n">EncodeEvent</span><span class="p">,</span> <span class="n">EncodeFunctionDeregisterEvent</span><span class="p">,</span>
+                          <span class="n">EncodeFunctionRegisterEvent</span><span class="p">,</span>
+                          <span class="n">EncodeFunctionSelectEvent</span><span class="p">,</span> <span class="n">ExitEvent</span><span class="p">,</span> <span class="n">FunctionEvent</span><span class="p">,</span>
+                          <span class="n">FunctionRegisterEvent</span><span class="p">,</span> <span class="n">LaunchEvent</span><span class="p">,</span>
+                          <span class="n">LayoutChangeEvent</span><span class="p">,</span> <span class="n">LayoutEvent</span><span class="p">,</span> <span class="n">LayoutRegisterEvent</span><span class="p">,</span>
+                          <span class="n">MappingEvent</span><span class="p">,</span> <span class="n">MappingFunctionDeregisterEvent</span><span class="p">,</span>
+                          <span class="n">MappingFunctionRegisterEvent</span><span class="p">,</span>
+                          <span class="n">MappingFunctionSelectEvent</span><span class="p">,</span> <span class="n">PanelEvent</span><span class="p">,</span>
+                          <span class="n">PanelRegisterEvent</span><span class="p">,</span> <span class="n">PanelSelectionChangeEvent</span><span class="p">,</span>
+                          <span class="n">PanelViewEvent</span><span class="p">,</span> <span class="n">PeakFunctionDeregisterEvent</span><span class="p">,</span>
+                          <span class="n">PeakFunctionRegisterEvent</span><span class="p">,</span> <span class="n">PeakTypeChangeEvent</span><span class="p">,</span>
+                          <span class="n">PeakTypeEvent</span><span class="p">,</span> <span class="n">PeakTypeRegisterEvent</span><span class="p">,</span>
+                          <span class="n">PreferenceEvent</span><span class="p">,</span> <span class="n">PresetDeregisterEvent</span><span class="p">,</span> <span class="n">PresetEvent</span><span class="p">,</span>
+                          <span class="n">PresetRegisterEvent</span><span class="p">,</span> <span class="n">PresetSelectEvent</span><span class="p">,</span> <span class="n">ProjectEvent</span><span class="p">,</span>
+                          <span class="n">ProjectLoadEvent</span><span class="p">,</span> <span class="n">ProjectMemoChangeEvent</span><span class="p">,</span>
+                          <span class="n">ProjectNewEvent</span><span class="p">,</span> <span class="n">ProjectOpenEvent</span><span class="p">,</span> <span class="n">ProjectSaveEvent</span><span class="p">,</span>
+                          <span class="n">RecipeSelectEvent</span><span class="p">,</span> <span class="n">SpectrumFunctionDeregisterEvent</span><span class="p">,</span>
+                          <span class="n">SpectrumFunctionListSelectEvent</span><span class="p">,</span>
+                          <span class="n">SpectrumFunctionRegisterEvent</span><span class="p">,</span> <span class="n">TableSizeChangeEvent</span><span class="p">,</span>
+                          <span class="n">wxEVT_COLOR_REGISTER</span><span class="p">,</span> <span class="n">wxEVT_COLOR_SELECT</span><span class="p">,</span>
+                          <span class="n">wxEVT_COLORMAP_CHANGE</span><span class="p">,</span> <span class="n">wxEVT_DATA_CONTENTS_CHANGE</span><span class="p">,</span>
+                          <span class="n">wxEVT_DATA_SELECTION_CHANGE</span><span class="p">,</span>
+                          <span class="n">wxEVT_DECODE_FUNCTION_DEREGISTER</span><span class="p">,</span>
+                          <span class="n">wxEVT_DECODE_FUNCTION_REGISTER</span><span class="p">,</span>
+                          <span class="n">wxEVT_DECODE_FUNCTION_SELECT</span><span class="p">,</span> <span class="n">wxEVT_DIRECTION_CHANGE</span><span class="p">,</span>
+                          <span class="n">wxEVT_ENCODE_FUNCTION_DEREGISTER</span><span class="p">,</span>
+                          <span class="n">wxEVT_ENCODE_FUNCTION_REGISTER</span><span class="p">,</span>
+                          <span class="n">wxEVT_ENCODE_FUNCTION_SELECT</span><span class="p">,</span> <span class="n">wxEVT_LAYOUT_CHANGE</span><span class="p">,</span>
+                          <span class="n">wxEVT_LAYOUT_REGISTER</span><span class="p">,</span>
+                          <span class="n">wxEVT_MAPPING_FUNCTION_DEREGISTER</span><span class="p">,</span>
+                          <span class="n">wxEVT_MAPPING_FUNCTION_REGISTER</span><span class="p">,</span>
+                          <span class="n">wxEVT_MAPPING_FUNCTION_SELECT</span><span class="p">,</span> <span class="n">wxEVT_PANEL_REGISTER</span><span class="p">,</span>
+                          <span class="n">wxEVT_PANEL_SELECTION_CHANGE</span><span class="p">,</span> <span class="n">wxEVT_PANEL_VIEW</span><span class="p">,</span>
+                          <span class="n">wxEVT_PEAK_FUNCTION_DEREGISTER</span><span class="p">,</span>
+                          <span class="n">wxEVT_PEAK_FUNCTION_REGISTER</span><span class="p">,</span> <span class="n">wxEVT_PEAK_TYPE_CHANGE</span><span class="p">,</span>
+                          <span class="n">wxEVT_PEAK_TYPE_REGISTER</span><span class="p">,</span> <span class="n">wxEVT_PRESET_DEREGISTER</span><span class="p">,</span>
+                          <span class="n">wxEVT_PRESET_REGISTER</span><span class="p">,</span> <span class="n">wxEVT_PRESET_SELECT</span><span class="p">,</span>
+                          <span class="n">wxEVT_PROJECT_EXIT</span><span class="p">,</span> <span class="n">wxEVT_PROJECT_MEMO_CHANGE</span><span class="p">,</span>
+                          <span class="n">wxEVT_PROJECT_NEW</span><span class="p">,</span> <span class="n">wxEVT_PROJECT_OPEN</span><span class="p">,</span>
+                          <span class="n">wxEVT_PROJECT_SAVE</span><span class="p">,</span> <span class="n">wxEVT_RECIPE_SELECT</span><span class="p">,</span>
+                          <span class="n">wxEVT_SPECTRUM_FUNCTION_DEREGISTER</span><span class="p">,</span>
+                          <span class="n">wxEVT_SPECTRUM_FUNCTION_LIST_SELECT</span><span class="p">,</span>
+                          <span class="n">wxEVT_SPECTRUM_FUNCTION_REGISTER</span><span class="p">,</span>
+                          <span class="n">wxEVT_TABLE_SIZE_CHANGE</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.objects</span> <span class="kn">import</span> <span class="n">PeakType</span>
+<span class="kn">from</span> <span class="nn">.util</span> <span class="kn">import</span> <span class="n">GetShowPanelLabel</span>
+
+
+<div class="viewcode-block" id="EventReceptorBase"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase">[docs]</a><span class="k">class</span> <span class="nc">EventReceptorBase</span><span class="p">(</span><span class="n">iSATecObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for receiving events</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EventReceptorBase.OnProjectEvent"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnProjectEvent">[docs]</a>    <span class="k">def</span> <span class="nf">OnProjectEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">ProjectEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to Project is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: ProjectEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnProjectLoad"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnProjectLoad">[docs]</a>    <span class="k">def</span> <span class="nf">OnProjectLoad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">ProjectLoadEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to project loading is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: ProjectLoadEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnProjectNew"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnProjectNew">[docs]</a>    <span class="k">def</span> <span class="nf">OnProjectNew</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">ProjectNewEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to loading a new project is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: ProjectNewEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnProjectOpen"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnProjectOpen">[docs]</a>    <span class="k">def</span> <span class="nf">OnProjectOpen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">ProjectOpenEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to loading an existing project is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: ProjectOpenEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnProjectSave"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnProjectSave">[docs]</a>    <span class="k">def</span> <span class="nf">OnProjectSave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">ProjectSaveEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to saving a project is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: ProjectSaveEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnProjectMemoChange"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnProjectMemoChange">[docs]</a>    <span class="k">def</span> <span class="nf">OnProjectMemoChange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">ProjectMemoChangeEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to a change in a project memo is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: ProjectMemoChangeEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+    <span class="k">def</span> <span class="nf">_OnProjectExit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;FURUTE WORK. Called when an event related to project exit is fired. This method is intended to be overridden.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="EventReceptorBase.OnDataEvent"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnDataEvent">[docs]</a>    <span class="k">def</span> <span class="nf">OnDataEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">DataEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to data is fired.</span>
+
+<span class="sd">        :type event: DataEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnDataContentsChange"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnDataContentsChange">[docs]</a>    <span class="k">def</span> <span class="nf">OnDataContentsChange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">DataContentsChangeEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to a change in the contents of the data is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: DataContentsChangeEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnDataSelectionChange"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnDataSelectionChange">[docs]</a>    <span class="k">def</span> <span class="nf">OnDataSelectionChange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">DataSelectionChangeEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to a change in data selection is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: DataSelectionChangeEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnFunctionEvent"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnFunctionEvent">[docs]</a>    <span class="k">def</span> <span class="nf">OnFunctionEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">FunctionEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to the function fires. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: FunctionEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnEncodeFunctionSelect"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnEncodeFunctionSelect">[docs]</a>    <span class="k">def</span> <span class="nf">OnEncodeFunctionSelect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">EncodeFunctionSelectEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to the selection of an encoding function is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: EncodeFunctionSelectEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnDecodeFunctionSelect"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnDecodeFunctionSelect">[docs]</a>    <span class="k">def</span> <span class="nf">OnDecodeFunctionSelect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">DecodeFunctionSelectEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to the selection of the decode function is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: DecodeFunctionSelectEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnSpectrumFunctionListSelect"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnSpectrumFunctionListSelect">[docs]</a>    <span class="k">def</span> <span class="nf">OnSpectrumFunctionListSelect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">SpectrumFunctionListSelectEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to the selection of a spectral function fires. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: SpectrumFunctionListSelectEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnMappingFunctionSelect"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnMappingFunctionSelect">[docs]</a>    <span class="k">def</span> <span class="nf">OnMappingFunctionSelect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">MappingFunctionSelectEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to the selection of a mapping function fires. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: MappingFunctionSelectEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnFunctionRegisterEvent"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnFunctionRegisterEvent">[docs]</a>    <span class="k">def</span> <span class="nf">OnFunctionRegisterEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">FunctionRegisterEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to the registration of a function fires. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: FunctionRegisterEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnEncodeFunctionRegister"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnEncodeFunctionRegister">[docs]</a>    <span class="k">def</span> <span class="nf">OnEncodeFunctionRegister</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">EncodeFunctionRegisterEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to the registration of an encoding function is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :param event: [description]</span>
+<span class="sd">        :type event: [type]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnEncodeFunctionDeregister"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnEncodeFunctionDeregister">[docs]</a>    <span class="k">def</span> <span class="nf">OnEncodeFunctionDeregister</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">EncodeFunctionDeregisterEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to deregistering an encoding function is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: EncodeFunctionDeregisterEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnDecodeFunctionRegister"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnDecodeFunctionRegister">[docs]</a>    <span class="k">def</span> <span class="nf">OnDecodeFunctionRegister</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">DecodeFunctionRegisterEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to the registration of the decode function is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: DecodeFunctionRegisterEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnDecodeFunctionDeregister"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnDecodeFunctionDeregister">[docs]</a>    <span class="k">def</span> <span class="nf">OnDecodeFunctionDeregister</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">DecodeFunctionDeregisterEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to deregistering an decoding function is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: EncodeFunctionDeregisterEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnSpectrumFunctionRegister"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnSpectrumFunctionRegister">[docs]</a>    <span class="k">def</span> <span class="nf">OnSpectrumFunctionRegister</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">SpectrumFunctionRegisterEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to the registration of the spectral function is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: SpectrumFunctionRegisterEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnSpectrumFunctionDeregister"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnSpectrumFunctionDeregister">[docs]</a>    <span class="k">def</span> <span class="nf">OnSpectrumFunctionDeregister</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">SpectrumFunctionDeregisterEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to deregistering a spectral function is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: SpectrumFunctionDeregisterEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnPeakFunctionRegister"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnPeakFunctionRegister">[docs]</a>    <span class="k">def</span> <span class="nf">OnPeakFunctionRegister</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">PeakFunctionRegisterEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to the registration of the peak function is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: PeakFunctionRegisterEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnPeakFunctionDeregister"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnPeakFunctionDeregister">[docs]</a>    <span class="k">def</span> <span class="nf">OnPeakFunctionDeregister</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">PeakFunctionDeregisterEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to deregistering a peak function is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: PeakFunctionDeregisterEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnMappingFunctionRegister"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnMappingFunctionRegister">[docs]</a>    <span class="k">def</span> <span class="nf">OnMappingFunctionRegister</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">MappingFunctionRegisterEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to the registration of the mapping function is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: MappingFunctionRegisterEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnMappingFunctionDeregister"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnMappingFunctionDeregister">[docs]</a>    <span class="k">def</span> <span class="nf">OnMappingFunctionDeregister</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">MappingFunctionDeregisterEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to deregistering a mapping function is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: MappingFunctionDeregisterEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnRecipeSelect"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnRecipeSelect">[docs]</a>    <span class="k">def</span> <span class="nf">OnRecipeSelect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">RecipeSelectEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to the selection of a recipe is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: RecipeSelectEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnPresetEvent"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnPresetEvent">[docs]</a>    <span class="k">def</span> <span class="nf">OnPresetEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">PresetEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to a preset is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: PresetEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnPresetRegister"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnPresetRegister">[docs]</a>    <span class="k">def</span> <span class="nf">OnPresetRegister</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">PresetRegisterEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to preset registration is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: PresetRegisterEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnPresetDeregister"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnPresetDeregister">[docs]</a>    <span class="k">def</span> <span class="nf">OnPresetDeregister</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">PresetDeregisterEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to deregistering presets is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: PresetDeregisterEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnPresetSelect"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnPresetSelect">[docs]</a>    <span class="k">def</span> <span class="nf">OnPresetSelect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">PresetSelectEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to preset selection is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: PresetSelectEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnEncodeEvent"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnEncodeEvent">[docs]</a>    <span class="k">def</span> <span class="nf">OnEncodeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">EncodeEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to encoding is fired. Note that it is not an encoding function. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: EncodeEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnDecodeEvent"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnDecodeEvent">[docs]</a>    <span class="k">def</span> <span class="nf">OnDecodeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">DecodeEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to decoding is fired. Note that it is not an decoding function. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: DecodeEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnMappingEvent"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnMappingEvent">[docs]</a>    <span class="k">def</span> <span class="nf">OnMappingEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">MappingEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to mapping is fired. Note that it is not an mapping function. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: MappingEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnTableSizeChange"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnTableSizeChange">[docs]</a>    <span class="k">def</span> <span class="nf">OnTableSizeChange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">TableSizeChangeEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to a change in the mapping table size is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: TableSizeChangeEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnDirectionChange"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnDirectionChange">[docs]</a>    <span class="k">def</span> <span class="nf">OnDirectionChange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">DirectionChangeEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to a change in mapping direction is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: DirectionChangeEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnColormapChange"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnColormapChange">[docs]</a>    <span class="k">def</span> <span class="nf">OnColormapChange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">ColormapChangeEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to a change in the mapping&#39;s color map is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: ColormapChangeEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnPeakTypeEvent"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnPeakTypeEvent">[docs]</a>    <span class="k">def</span> <span class="nf">OnPeakTypeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">PeakTypeEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to the type of peak is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: PeakTypeEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnPeakTypeRegisterEvent"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnPeakTypeRegisterEvent">[docs]</a>    <span class="k">def</span> <span class="nf">OnPeakTypeRegisterEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">PeakTypeRegisterEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to the registration of a peak type fires. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: PeakTypeRegisterEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnPeakTypeChange"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnPeakTypeChange">[docs]</a>    <span class="k">def</span> <span class="nf">OnPeakTypeChange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">PeakTypeChangeEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to a change in peak type fires. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: PeakTypeChangeEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnPanelEvent"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnPanelEvent">[docs]</a>    <span class="k">def</span> <span class="nf">OnPanelEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">PanelEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to the panel fires. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: PanelEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnPanelSelectionChange"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnPanelSelectionChange">[docs]</a>    <span class="k">def</span> <span class="nf">OnPanelSelectionChange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">PanelSelectionChangeEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to panel selection is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: PanelSelectionChangeEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnPanelView"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnPanelView">[docs]</a>    <span class="k">def</span> <span class="nf">OnPanelView</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">PanelViewEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to the display of the panel is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: PanelViewEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnShow"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnShow">[docs]</a>    <span class="k">def</span> <span class="nf">OnShow</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when the panel is displayed. This method is intended to be overridden.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnHide"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnHide">[docs]</a>    <span class="k">def</span> <span class="nf">OnHide</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when the panel is hidden. This method is intended to be overridden.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnPanelRegister"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnPanelRegister">[docs]</a>    <span class="k">def</span> <span class="nf">OnPanelRegister</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">PanelRegisterEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to the registration of a panel is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: PanelRegisterEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnLayoutEvent"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnLayoutEvent">[docs]</a>    <span class="k">def</span> <span class="nf">OnLayoutEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">LayoutEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to the layout is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: LayoutEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnLayoutChange"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnLayoutChange">[docs]</a>    <span class="k">def</span> <span class="nf">OnLayoutChange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">LayoutChangeEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to a layout change is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: LayoutChangeEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnLayoutRegister"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnLayoutRegister">[docs]</a>    <span class="k">def</span> <span class="nf">OnLayoutRegister</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">LayoutRegisterEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to registering a layout is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: LayoutRegisterEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnPreferenceEvent"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnPreferenceEvent">[docs]</a>    <span class="k">def</span> <span class="nf">OnPreferenceEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">PreferenceEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to the preferences is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: PreferenceEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnColorEvent"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnColorEvent">[docs]</a>    <span class="k">def</span> <span class="nf">OnColorEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">ColorEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when a color-related event fires. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: ColorEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnColorRegister"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnColorRegister">[docs]</a>    <span class="k">def</span> <span class="nf">OnColorRegister</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">ColorRegisterEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to color registration is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: ColorRegisterEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnColorSelect"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnColorSelect">[docs]</a>    <span class="k">def</span> <span class="nf">OnColorSelect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">ColorSelectionEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event related to color selection is fired. This method is intended to be overridden.</span>
+
+<span class="sd">        :type event: ColorSelectionEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnLaunch"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnLaunch">[docs]</a>    <span class="k">def</span> <span class="nf">OnLaunch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when the iSATec is launched. This method is intended to be overridden.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EventReceptorBase.OnExitEvent"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnExitEvent">[docs]</a>    <span class="k">def</span> <span class="nf">OnExitEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when the iSATec is exited. This method is intended to be overridden.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+    <span class="k">def</span> <span class="nf">__OnProjectEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event_type</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">GetEventType</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">ProjectLoadEvent</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__OnProjectLoadEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_PROJECT_SAVE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnProjectSave</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_PROJECT_MEMO_CHANGE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnProjectMemoChange</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_PROJECT_EXIT</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_OnProjectExit</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">OnProjectEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__OnProjectLoadEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event_type</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">GetEventType</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_PROJECT_NEW</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnProjectNew</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_PROJECT_OPEN</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnProjectOpen</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">OnProjectLoad</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__OnDataEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event_type</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">GetEventType</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_DATA_CONTENTS_CHANGE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnDataContentsChange</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_DATA_SELECTION_CHANGE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnDataSelectionChange</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">OnDataEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__OnFunctionEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event_type</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">GetEventType</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_ENCODE_FUNCTION_SELECT</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnEncodeFunctionSelect</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_DECODE_FUNCTION_SELECT</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnDecodeFunctionSelect</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_SPECTRUM_FUNCTION_LIST_SELECT</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnSpectrumFunctionListSelect</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_MAPPING_FUNCTION_SELECT</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnMappingFunctionSelect</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_RECIPE_SELECT</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnRecipeSelect</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">FunctionRegisterEvent</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__OnFunctionRegisterEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">PresetEvent</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__OnPresetEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">OnFunctionEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__OnFunctionRegisterEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event_type</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">GetEventType</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_ENCODE_FUNCTION_REGISTER</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnEncodeFunctionRegister</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_ENCODE_FUNCTION_DEREGISTER</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnEncodeFunctionDeregister</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_DECODE_FUNCTION_REGISTER</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnDecodeFunctionRegister</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_DECODE_FUNCTION_DEREGISTER</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnDecodeFunctionDeregister</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_SPECTRUM_FUNCTION_REGISTER</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnSpectrumFunctionRegister</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_SPECTRUM_FUNCTION_DEREGISTER</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnSpectrumFunctionDeregister</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_PEAK_FUNCTION_REGISTER</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnPeakFunctionRegister</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_PEAK_FUNCTION_DEREGISTER</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnPeakFunctionDeregister</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_MAPPING_FUNCTION_REGISTER</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnMappingFunctionRegister</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_MAPPING_FUNCTION_DEREGISTER</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnMappingFunctionDeregister</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">OnFunctionRegisterEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__OnMappingEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event_type</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">GetEventType</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_TABLE_SIZE_CHANGE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnTableSizeChange</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_DIRECTION_CHANGE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnDirectionChange</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_COLORMAP_CHANGE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnColormapChange</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">OnMappingEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__OnPresetEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event_type</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">GetEventType</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_PRESET_REGISTER</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnPresetRegister</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_PRESET_DEREGISTER</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnPresetDeregister</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_PRESET_SELECT</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnPresetSelect</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">OnPresetEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__OnPeakTypeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event_type</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">GetEventType</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_PEAK_TYPE_REGISTER</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnPeakTypeRegisterEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_PEAK_TYPE_CHANGE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnPeakTypeChange</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">OnPeakTypeEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__OnPanelEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event_type</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">GetEventType</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_PANEL_SELECTION_CHANGE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnPanelSelectionChange</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_PANEL_VIEW</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span> <span class="ow">in</span> <span class="n">event</span><span class="o">.</span><span class="n">GetShowPanelList</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">OnShow</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="bp">self</span> <span class="ow">in</span> <span class="n">event</span><span class="o">.</span><span class="n">GetHidePanelList</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">OnHide</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnPanelView</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_PANEL_REGISTER</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnPanelRegister</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">LayoutEvent</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__OnLayoutEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">OnPanelEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__OnLayoutEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event_type</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">GetEventType</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_LAYOUT_CHANGE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnLayoutChange</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_LAYOUT_REGISTER</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnLayoutRegister</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">OnLayoutEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__OnColorEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event_type</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">GetEventType</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_COLOR_REGISTER</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnColorRegister</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">wxEVT_COLOR_SELECT</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnColorSelect</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">OnColorEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EventReceptorBase.OnEvent"><a class="viewcode-back" href="../../isatec.html#isatec.container.EventReceptorBase.OnEvent">[docs]</a>    <span class="k">def</span> <span class="nf">OnEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">PyCommandEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when an event is fired.</span>
+
+<span class="sd">        :type event: PyCommandEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">GetId</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">GetId</span><span class="p">():</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">ProjectEvent</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__OnProjectEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">DataEvent</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__OnDataEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">FunctionEvent</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__OnFunctionEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">EncodeEvent</span><span class="p">):</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnEncodeEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">DecodeEvent</span><span class="p">):</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnDecodeEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">MappingEvent</span><span class="p">):</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">__OnMappingEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">PeakTypeEvent</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__OnPeakTypeEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">PanelEvent</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__OnPanelEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">PreferenceEvent</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnPreferenceEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">ColorEvent</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__OnColorEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">LaunchEvent</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnLaunch</span><span class="p">()</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">ExitEvent</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">OnExitEvent</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="PanelBase"><a class="viewcode-back" href="../../isatec.html#isatec.container.PanelBase">[docs]</a><span class="k">class</span> <span class="nc">PanelBase</span><span class="p">(</span><span class="n">CommunicableObjectBase</span><span class="p">,</span> <span class="n">SettingStorableObjectBase</span><span class="p">,</span> <span class="n">EventReceptorBase</span><span class="p">,</span> <span class="n">Panel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for panel UI used in iSATec</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Default constructor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">iSATecObject</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PanelBase.NeedDraw"><a class="viewcode-back" href="../../isatec.html#isatec.container.PanelBase.NeedDraw">[docs]</a>    <span class="k">def</span> <span class="nf">NeedDraw</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return whether it is necessary to draw spectral data, etc. If True, the spectral data will be drawn when the panel gets the focus.</span>
+
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="PanelBase.NeedMultiDraw"><a class="viewcode-back" href="../../isatec.html#isatec.container.PanelBase.NeedMultiDraw">[docs]</a>    <span class="k">def</span> <span class="nf">NeedMultiDraw</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Return whether all data should be drawn when multiple data are selected. If the return value is between 0.0 and 1.0, it represents transparency.</span>
+
+<span class="sd">        :rtype: Union[bool, float]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="PanelBase.NeedBackgroundDraw"><a class="viewcode-back" href="../../isatec.html#isatec.container.PanelBase.NeedBackgroundDraw">[docs]</a>    <span class="k">def</span> <span class="nf">NeedBackgroundDraw</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns whether the background needs to be drawn or not.</span>
+
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="PanelBase.NeedPeaksDraw"><a class="viewcode-back" href="../../isatec.html#isatec.container.PanelBase.NeedPeaksDraw">[docs]</a>    <span class="k">def</span> <span class="nf">NeedPeaksDraw</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns whether the peak needs to be drawn or not.</span>
+
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">False</span></div></div>
+
+
+<div class="viewcode-block" id="CustomMenuItemBase"><a class="viewcode-back" href="../../isatec.html#isatec.container.CustomMenuItemBase">[docs]</a><span class="k">class</span> <span class="nc">CustomMenuItemBase</span><span class="p">(</span><span class="n">EventReceptorBase</span><span class="p">,</span> <span class="n">MenuItem</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for customizable menu items. Please refer to wxPython (https://docs.wxpython.org/wx.MenuItem.html?highlight=menuitem#wx.MenuItem) for details.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">EmptyString</span><span class="p">,</span> <span class="n">helpString</span><span class="o">=</span><span class="n">EmptyString</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">ITEM_NORMAL</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Default constructor</span>
+
+<span class="sd">        :param text: Text to be displayed. If you want to set up hotkeys, refer to wxPython (https://docs.wxpython.org/wx.AcceleratorEntry.html#wx.AcceleratorEntry.FromString), defaults to EmptyString</span>
+<span class="sd">        :type text: str, optional</span>
+<span class="sd">        :param helpString: Text that pops when the mouse hover, defaults to EmptyString</span>
+<span class="sd">        :type helpString: str, optional</span>
+<span class="sd">        :param kind: Kind of menu, defaults to ITEM_NORMAL</span>
+<span class="sd">        :type kind: int, optional</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">id</span> <span class="o">=</span> <span class="n">NewIdRef</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">helpString</span><span class="o">=</span><span class="n">helpString</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CustomMenuItemBase.Function"><a class="viewcode-back" href="../../isatec.html#isatec.container.CustomMenuItemBase.Function">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">Function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Function called when a menu item is selected.</span>
+
+<span class="sd">        :raises NotImplementedError: Error sent if the method is not overridden.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="CustomNormalMenuItemBase"><a class="viewcode-back" href="../../isatec.html#isatec.container.CustomNormalMenuItemBase">[docs]</a><span class="k">class</span> <span class="nc">CustomNormalMenuItemBase</span><span class="p">(</span><span class="n">CommunicableObjectBase</span><span class="p">,</span> <span class="n">SettingStorableObjectBase</span><span class="p">,</span> <span class="n">CustomMenuItemBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wrapper for the CustomMenuItemBase. Normal menu.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">EmptyString</span><span class="p">,</span> <span class="n">helpString</span><span class="o">=</span><span class="n">EmptyString</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Default constructor</span>
+
+<span class="sd">        :param text: Text to be displayed. If you want to set up hotkeys, refer to wxPython (https://docs.wxpython.org/wx.AcceleratorEntry.html#wx.AcceleratorEntry.FromString), defaults to EmptyString</span>
+<span class="sd">        :type text: str, optional</span>
+<span class="sd">        :param helpString: Text that pops when the mouse hover, defaults to EmptyString</span>
+<span class="sd">        :type helpString: str, optional</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">helpString</span><span class="o">=</span><span class="n">helpString</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">ITEM_NORMAL</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CustomRadioMenuItemBase"><a class="viewcode-back" href="../../isatec.html#isatec.container.CustomRadioMenuItemBase">[docs]</a><span class="k">class</span> <span class="nc">CustomRadioMenuItemBase</span><span class="p">(</span><span class="n">CommunicableObjectBase</span><span class="p">,</span> <span class="n">SettingStorableObjectBase</span><span class="p">,</span> <span class="n">CustomMenuItemBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wrapper for the CustomMenuItemBase. Radio menu.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">EmptyString</span><span class="p">,</span> <span class="n">helpString</span><span class="o">=</span><span class="n">EmptyString</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Default constructor</span>
+
+<span class="sd">        :param text: Text to be displayed. If you want to set up hotkeys, refer to wxPython (https://docs.wxpython.org/wx.AcceleratorEntry.html#wx.AcceleratorEntry.FromString), defaults to EmptyString</span>
+<span class="sd">        :type text: str, optional</span>
+<span class="sd">        :param helpString: Text that pops when the mouse hover, defaults to EmptyString</span>
+<span class="sd">        :type helpString: str, optional</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">helpString</span><span class="o">=</span><span class="n">helpString</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">ITEM_RADIO</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CustomCheckMenuItemBase"><a class="viewcode-back" href="../../isatec.html#isatec.container.CustomCheckMenuItemBase">[docs]</a><span class="k">class</span> <span class="nc">CustomCheckMenuItemBase</span><span class="p">(</span><span class="n">CommunicableObjectBase</span><span class="p">,</span> <span class="n">SettingStorableObjectBase</span><span class="p">,</span> <span class="n">CustomMenuItemBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wrapper for the CustomMenuItemBase. Checkbox menu.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">EmptyString</span><span class="p">,</span> <span class="n">helpString</span><span class="o">=</span><span class="n">EmptyString</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Default constructor</span>
+
+<span class="sd">        :param text: Text to be displayed. If you want to set up hotkeys, refer to wxPython (https://docs.wxpython.org/wx.AcceleratorEntry.html#wx.AcceleratorEntry.FromString), defaults to EmptyString</span>
+<span class="sd">        :type text: str, optional</span>
+<span class="sd">        :param helpString: Text that pops when the mouse hover, defaults to EmptyString</span>
+<span class="sd">        :type helpString: str, optional</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">helpString</span><span class="o">=</span><span class="n">helpString</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">ITEM_CHECK</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ShowPanelMenuItem"><a class="viewcode-back" href="../../isatec.html#isatec.container.ShowPanelMenuItem">[docs]</a><span class="k">class</span> <span class="nc">ShowPanelMenuItem</span><span class="p">(</span><span class="n">CustomMenuItemBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Checkbox menu for panel display.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_mgr</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">panel</span><span class="p">:</span> <span class="n">PanelBase</span><span class="p">,</span> <span class="n">helpString</span><span class="o">=</span><span class="n">EmptyString</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Defalt constructor</span>
+
+<span class="sd">        :param panel: Panel to manage</span>
+<span class="sd">        :type panel: PanelBase</span>
+<span class="sd">        :param helpString: Text that pops when the mouse hover, defaults to EmptyString</span>
+<span class="sd">        :type helpString: str, optional</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">panel</span><span class="p">,</span> <span class="n">PanelBase</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">()</span>
+
+        <span class="n">text</span> <span class="o">=</span> <span class="n">GetShowPanelLabel</span><span class="p">(</span><span class="n">panel</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">helpString</span><span class="o">=</span><span class="n">helpString</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">ITEM_CHECK</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__panel</span> <span class="o">=</span> <span class="n">panel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Check</span><span class="p">(</span><span class="n">panel</span><span class="o">.</span><span class="n">Shown</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ShowPanelMenuItem.GetPanel"><a class="viewcode-back" href="../../isatec.html#isatec.container.ShowPanelMenuItem.GetPanel">[docs]</a>    <span class="k">def</span> <span class="nf">GetPanel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PanelBase</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get panel manegered</span>
+
+<span class="sd">        :rtype: PanelBase</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__panel</span></div>
+
+<div class="viewcode-block" id="ShowPanelMenuItem.Function"><a class="viewcode-back" href="../../isatec.html#isatec.container.ShowPanelMenuItem.Function">[docs]</a>    <span class="k">def</span> <span class="nf">Function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Switches the display of the panel you are managing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ShowPanelMenuItem</span><span class="o">.</span><span class="n">_mgr</span><span class="o">.</span><span class="n">ShowPane</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__panel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">IsChecked</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="PeakMenuItem"><a class="viewcode-back" href="../../isatec.html#isatec.container.PeakMenuItem">[docs]</a><span class="k">class</span> <span class="nc">PeakMenuItem</span><span class="p">(</span><span class="n">CustomMenuItemBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Radio menu for selecting the type of peak.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_mgr</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">peak_type</span><span class="p">:</span> <span class="n">PeakType</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Default constructor</span>
+
+<span class="sd">        :param peak_type: Type of peak to be managed.</span>
+<span class="sd">        :type peak_type: PeakType</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">peak_type</span><span class="o">.</span><span class="n">GetName</span><span class="p">()</span>
+        <span class="n">helpString</span> <span class="o">=</span> <span class="n">peak_type</span><span class="o">.</span><span class="n">GetHelpText</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">helpString</span><span class="o">=</span><span class="n">helpString</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">ITEM_RADIO</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__peak_type</span> <span class="o">=</span> <span class="n">peak_type</span>
+
+<div class="viewcode-block" id="PeakMenuItem.Function"><a class="viewcode-back" href="../../isatec.html#isatec.container.PeakMenuItem.Function">[docs]</a>    <span class="k">def</span> <span class="nf">Function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Select type of peak.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">PeakMenuItem</span><span class="o">.</span><span class="n">_mgr</span><span class="o">.</span><span class="n">SelectPeakType</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__peak_type</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PeakMenuItem.OnLaunch"><a class="viewcode-back" href="../../isatec.html#isatec.container.PeakMenuItem.OnLaunch">[docs]</a>    <span class="k">def</span> <span class="nf">OnLaunch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Make it deselectable.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Enable</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PeakMenuItem.OnProjectLoad"><a class="viewcode-back" href="../../isatec.html#isatec.container.PeakMenuItem.OnProjectLoad">[docs]</a>    <span class="k">def</span> <span class="nf">OnProjectLoad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Enable</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="LayoutMenuItem"><a class="viewcode-back" href="../../isatec.html#isatec.container.LayoutMenuItem">[docs]</a><span class="k">class</span> <span class="nc">LayoutMenuItem</span><span class="p">(</span><span class="n">CustomMenuItemBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Menu for selecting the layout.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_mgr</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Default constructor</span>
+
+<span class="sd">        :param name: name of layout</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">helpString</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">ITEM_NORMAL</span><span class="p">)</span>
+
+<div class="viewcode-block" id="LayoutMenuItem.Function"><a class="viewcode-back" href="../../isatec.html#isatec.container.LayoutMenuItem.Function">[docs]</a>    <span class="k">def</span> <span class="nf">Function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GetItemLabel</span><span class="p">()</span>
+        <span class="n">LayoutMenuItem</span><span class="o">.</span><span class="n">_mgr</span><span class="o">.</span><span class="n">LoadLayout</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div></div>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;EventReceptorBase&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;PanelBase&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;CustomMenuItemBase&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;CustomNormalMenuItemBase&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;CustomRadioMenuItemBase&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;CustomCheckMenuItemBase&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ShowPanelMenuItem&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;PeakMenuItem&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;LayoutMenuItem&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Ryo Tandai.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

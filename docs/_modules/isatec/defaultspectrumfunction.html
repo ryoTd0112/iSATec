@@ -1,0 +1,690 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>isatec.defaultspectrumfunction &mdash; iSATec 0.0.15 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> iSATec
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.15
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">iSATec</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">isatec</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">iSATec</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>isatec.defaultspectrumfunction</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for isatec.defaultspectrumfunction</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">isclose</span>
+
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">count_nonzero</span><span class="p">,</span> <span class="n">inf</span><span class="p">,</span> <span class="n">linspace</span><span class="p">,</span> <span class="n">ndarray</span><span class="p">,</span> <span class="n">newaxis</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span>
+                   <span class="n">reshape</span><span class="p">,</span> <span class="n">squeeze</span><span class="p">,</span> <span class="n">tile</span><span class="p">,</span> <span class="n">zeros</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">numpy.linalg</span> <span class="kn">import</span> <span class="n">pinv</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Akima1DInterpolator</span><span class="p">,</span> <span class="n">BarycentricInterpolator</span><span class="p">,</span>
+                               <span class="n">KroghInterpolator</span><span class="p">,</span> <span class="n">PchipInterpolator</span><span class="p">,</span> <span class="n">interp1d</span><span class="p">,</span>
+                               <span class="n">lagrange</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">curve_fit</span>
+<span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">find_peaks</span><span class="p">,</span> <span class="n">savgol_filter</span>
+
+<span class="kn">from</span> <span class="nn">.objects</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ChoiceContainer</span><span class="p">,</span> <span class="n">FloatContainer</span><span class="p">,</span> <span class="n">IntContainer</span><span class="p">,</span>
+                     <span class="n">ListArgumentContainer</span><span class="p">,</span> <span class="n">OptionalFloatContainer</span><span class="p">,</span>
+                     <span class="n">PeakFunctionContainerList</span><span class="p">,</span> <span class="n">SpectrumFunctionContainerBase</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Clipping"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.Clipping">[docs]</a><span class="k">class</span> <span class="nc">Clipping</span><span class="p">(</span><span class="n">SpectrumFunctionContainerBase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">({</span><span class="s1">&#39;Left&#39;</span><span class="p">:</span> <span class="n">FloatContainer</span><span class="p">(),</span> <span class="s1">&#39;Right&#39;</span><span class="p">:</span> <span class="n">FloatContainer</span><span class="p">()})</span>
+
+<div class="viewcode-block" id="Clipping.Function"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.Clipping.Function">[docs]</a>    <span class="k">def</span> <span class="nf">Function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">bg</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">args</span>
+
+        <span class="k">if</span> <span class="n">left</span> <span class="o">&gt;=</span> <span class="n">right</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;&quot;left&quot; should be less than &quot;right&quot;.&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">left</span> <span class="o">&gt;=</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;&quot;left&quot; should be less than the maximum value of &quot;x&quot;.&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">right</span> <span class="o">&lt;=</span> <span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;&quot;right&quot; should be greater than the minimum value of &quot;x&quot;.&#39;</span><span class="p">)</span>
+
+        <span class="n">min_index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">max_index</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="k">while</span><span class="p">(</span><span class="n">min_index</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">x</span><span class="p">[</span><span class="n">min_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">left</span><span class="p">):</span>
+            <span class="n">min_index</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">while</span><span class="p">(</span><span class="n">max_index</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">x</span><span class="p">[</span><span class="n">max_index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">right</span><span class="p">):</span>
+            <span class="n">max_index</span> <span class="o">-=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">max_index</span> <span class="o">&lt;=</span> <span class="n">min_index</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Probably, &quot;x&quot; is not a monotonic increase.&#39;</span><span class="p">)</span>
+
+        <span class="n">clipped_x</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">min_index</span><span class="p">:</span> <span class="n">max_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">clipped_y</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">min_index</span><span class="p">:</span> <span class="n">max_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">clipped_bg</span> <span class="o">=</span> <span class="n">bg</span><span class="p">[</span><span class="n">min_index</span><span class="p">:</span> <span class="n">max_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">clipped_x</span><span class="p">,</span> <span class="n">clipped_y</span><span class="p">,</span> <span class="n">clipped_bg</span></div>
+
+<div class="viewcode-block" id="Clipping.SendRequireParams"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.Clipping.SendRequireParams">[docs]</a>    <span class="k">def</span> <span class="nf">SendRequireParams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;xyb&#39;</span></div>
+
+<div class="viewcode-block" id="Clipping.SendReturnParams"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.Clipping.SendReturnParams">[docs]</a>    <span class="k">def</span> <span class="nf">SendReturnParams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;xyb&#39;</span></div>
+
+<div class="viewcode-block" id="Clipping.IsGoodCondition"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.Clipping.IsGoodCondition">[docs]</a>    <span class="k">def</span> <span class="nf">IsGoodCondition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="k">return</span> <span class="n">left</span> <span class="o">&lt;</span> <span class="n">right</span></div></div>
+
+
+<div class="viewcode-block" id="Smooth"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.Smooth">[docs]</a><span class="k">class</span> <span class="nc">Smooth</span><span class="p">(</span><span class="n">SpectrumFunctionContainerBase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">methods</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;quadratic&#39;</span><span class="p">,</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="s1">&#39;lagrange&#39;</span><span class="p">,</span> <span class="s1">&#39;barycentric&#39;</span><span class="p">,</span> <span class="s1">&#39;krogh&#39;</span><span class="p">,</span> <span class="s1">&#39;cubic&#39;</span><span class="p">,</span> <span class="s1">&#39;Akima&#39;</span><span class="p">,</span> <span class="s1">&#39;Pchip&#39;</span><span class="p">,)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">({</span><span class="s1">&#39;Resolution&#39;</span><span class="p">:</span> <span class="n">IntContainer</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="s1">&#39;Method&#39;</span><span class="p">:</span> <span class="n">ChoiceContainer</span><span class="p">(</span><span class="n">methods</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">methods</span><span class="p">)})</span>
+
+<div class="viewcode-block" id="Smooth.Function"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.Smooth.Function">[docs]</a>    <span class="k">def</span> <span class="nf">Function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">bg</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">args</span>
+
+        <span class="n">smoothed_x</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">resolution</span><span class="p">)</span>
+        <span class="n">method_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;nearest&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;linear&#39;</span><span class="p">:</span> <span class="n">interp1d</span><span class="p">,</span>
+            <span class="s1">&#39;lagrange&#39;</span><span class="p">:</span> <span class="n">lagrange</span><span class="p">,</span>
+            <span class="s1">&#39;barycentric&#39;</span><span class="p">:</span> <span class="n">BarycentricInterpolator</span><span class="p">,</span>
+            <span class="s1">&#39;krogh&#39;</span><span class="p">:</span> <span class="n">KroghInterpolator</span><span class="p">,</span>
+            <span class="s1">&#39;quadratic&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;quadratic&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;cubic&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;cubic&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;Akima&#39;</span><span class="p">:</span> <span class="n">Akima1DInterpolator</span><span class="p">,</span>
+            <span class="s1">&#39;Pchip&#39;</span><span class="p">:</span> <span class="n">PchipInterpolator</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">method</span> <span class="o">=</span> <span class="n">method_dict</span><span class="p">[</span><span class="n">method</span><span class="p">]</span>
+        <span class="n">smoothed_y</span> <span class="o">=</span> <span class="n">method</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)(</span><span class="n">smoothed_x</span><span class="p">)</span>
+        <span class="n">smoothed_bg</span> <span class="o">=</span> <span class="n">method</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bg</span><span class="p">)(</span><span class="n">smoothed_x</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">smoothed_x</span><span class="p">,</span> <span class="n">smoothed_y</span><span class="p">,</span> <span class="n">smoothed_bg</span><span class="p">,)</span></div>
+
+<div class="viewcode-block" id="Smooth.SendRequireParams"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.Smooth.SendRequireParams">[docs]</a>    <span class="k">def</span> <span class="nf">SendRequireParams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;xyb&#39;</span></div>
+
+<div class="viewcode-block" id="Smooth.SendReturnParams"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.Smooth.SendReturnParams">[docs]</a>    <span class="k">def</span> <span class="nf">SendReturnParams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;xyb&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="Normalize"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.Normalize">[docs]</a><span class="k">class</span> <span class="nc">Normalize</span><span class="p">(</span><span class="n">SpectrumFunctionContainerBase</span><span class="p">):</span>
+<div class="viewcode-block" id="Normalize.Function"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.Normalize.Function">[docs]</a>    <span class="k">def</span> <span class="nf">Function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="n">y</span><span class="p">,</span> <span class="n">bg</span><span class="p">,</span> <span class="n">peaks</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">isclose</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">y</span><span class="p">,</span> <span class="n">bg</span><span class="p">,</span> <span class="n">peaks</span>
+
+        <span class="n">height</span> <span class="o">=</span> <span class="n">ymax</span> <span class="o">-</span> <span class="n">ymin</span>
+
+        <span class="k">def</span> <span class="nf">normalizer</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="c1"># return (x - ymin) / (ymax - ymin)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">/</span> <span class="n">height</span>
+
+        <span class="n">normalized_y</span> <span class="o">=</span> <span class="n">normalizer</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="c1"># normalized_bg = normalizer(bg) if not (min(bg) == max(bg) == 0.0) else bg</span>
+        <span class="n">normalized_bg</span> <span class="o">=</span> <span class="n">normalizer</span><span class="p">(</span><span class="n">bg</span><span class="p">)</span>
+        <span class="n">normalized_peaks</span> <span class="o">=</span> <span class="n">PeakFunctionContainerList</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">peak</span> <span class="ow">in</span> <span class="n">peaks</span><span class="p">:</span>
+            <span class="n">normalized_peak</span> <span class="o">=</span> <span class="n">peak</span>
+            <span class="n">normalized_peak</span><span class="o">.</span><span class="n">Amp</span> <span class="o">=</span> <span class="n">peak</span><span class="o">.</span><span class="n">Amp</span> <span class="o">/</span> <span class="n">height</span>
+
+            <span class="n">normalized_peaks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">normalized_peak</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">normalized_y</span><span class="p">,</span> <span class="n">normalized_bg</span><span class="p">,</span> <span class="n">normalized_peaks</span></div>
+
+<div class="viewcode-block" id="Normalize.SendRequireParams"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.Normalize.SendRequireParams">[docs]</a>    <span class="k">def</span> <span class="nf">SendRequireParams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;ybp&#39;</span></div>
+
+<div class="viewcode-block" id="Normalize.SendReturnParams"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.Normalize.SendReturnParams">[docs]</a>    <span class="k">def</span> <span class="nf">SendReturnParams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;ybp&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="SavgolFilter"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.SavgolFilter">[docs]</a><span class="k">class</span> <span class="nc">SavgolFilter</span><span class="p">(</span><span class="n">SpectrumFunctionContainerBase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">({</span><span class="s1">&#39;Window length&#39;</span><span class="p">:</span> <span class="n">IntContainer</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="s1">&#39;Poly order&#39;</span><span class="p">:</span> <span class="n">IntContainer</span><span class="p">(</span><span class="mi">2</span><span class="p">)})</span>
+
+<div class="viewcode-block" id="SavgolFilter.Function"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.SavgolFilter.Function">[docs]</a>    <span class="k">def</span> <span class="nf">Function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="n">y</span><span class="p">,</span> <span class="n">bg</span><span class="p">,</span> <span class="n">window_length</span><span class="p">,</span> <span class="n">poly_order</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="n">filtered_y</span> <span class="o">=</span> <span class="n">savgol_filter</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">window_length</span><span class="p">,</span> <span class="n">poly_order</span><span class="p">)</span>
+        <span class="n">filtered_bg</span> <span class="o">=</span> <span class="n">savgol_filter</span><span class="p">(</span><span class="n">bg</span><span class="p">,</span> <span class="n">window_length</span><span class="p">,</span> <span class="n">poly_order</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">filtered_y</span><span class="p">,</span> <span class="n">filtered_bg</span></div>
+
+<div class="viewcode-block" id="SavgolFilter.SendRequireParams"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.SavgolFilter.SendRequireParams">[docs]</a>    <span class="k">def</span> <span class="nf">SendRequireParams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;yb&#39;</span></div>
+
+<div class="viewcode-block" id="SavgolFilter.SendReturnParams"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.SavgolFilter.SendReturnParams">[docs]</a>    <span class="k">def</span> <span class="nf">SendReturnParams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;yb&#39;</span></div>
+
+<div class="viewcode-block" id="SavgolFilter.IsGoodCondition"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.SavgolFilter.IsGoodCondition">[docs]</a>    <span class="k">def</span> <span class="nf">IsGoodCondition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">window_length</span><span class="p">,</span> <span class="n">poly_order</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="k">if</span> <span class="n">window_length</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">poly_order</span> <span class="o">&gt;=</span> <span class="n">window_length</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div></div>
+
+
+<div class="viewcode-block" id="Goldindec"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.Goldindec">[docs]</a><span class="k">class</span> <span class="nc">Goldindec</span><span class="p">(</span><span class="n">SpectrumFunctionContainerBase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">({</span><span class="s1">&#39;Poly order&#39;</span><span class="p">:</span> <span class="n">IntContainer</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="s1">&#39;Peak ratio&#39;</span><span class="p">:</span> <span class="n">FloatContainer</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">)})</span>
+
+<div class="viewcode-block" id="Goldindec.Function"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.Goldindec.Function">[docs]</a>    <span class="k">def</span> <span class="nf">Function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">peaks</span><span class="p">,</span> <span class="n">poly_order</span><span class="p">,</span> <span class="n">ratio</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="n">bg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">goldindec</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">poly_order</span><span class="p">,</span> <span class="n">ratio</span><span class="p">)</span>
+        <span class="n">subtracted_y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">bg</span>
+        <span class="n">ymin</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">subtracted_y</span><span class="p">)</span>
+
+        <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">peak</span> <span class="ow">in</span> <span class="n">peaks</span><span class="p">:</span>
+            <span class="n">amp</span> <span class="o">=</span> <span class="n">peak</span><span class="o">.</span><span class="n">Amp</span>
+            <span class="n">ctr</span> <span class="o">=</span> <span class="n">peak</span><span class="o">.</span><span class="n">Ctr</span>
+
+            <span class="k">while</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">bg</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">ctr</span><span class="p">:</span>
+                <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="n">bg</span><span class="p">[</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">bg</span><span class="p">[</span><span class="n">n</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">bg</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+
+            <span class="n">peak</span><span class="o">.</span><span class="n">Amp</span> <span class="o">=</span> <span class="n">amp</span> <span class="o">-</span> <span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">ctr</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span> <span class="o">-</span> <span class="n">ymin</span>
+
+        <span class="k">return</span> <span class="n">subtracted_y</span> <span class="o">-</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">bg</span> <span class="o">-</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">peaks</span></div>
+
+<div class="viewcode-block" id="Goldindec.goldindec"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.Goldindec.goldindec">[docs]</a>    <span class="k">def</span> <span class="nf">goldindec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">peak_ratio</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Estimate baseline with polynomial fitting</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (array_like): Raman wave number. This array should be monotonically increasing and column vector.</span>
+<span class="sd">            y (array_like): Raman intensity. This array should be column vector.</span>
+<span class="sd">            p (int): the polynomial order.</span>
+<span class="sd">            peak_ratio (float): the ratio of peaks. you can choose this value from 0.1 to 0.9 with step length 0.1.</span>
+<span class="sd">            eps (float): the parameter XX to terminate the iteration and users can specify this value.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            1-dimension ndarray: baseline</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ndarray</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">ndarray</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;x should be 2-dimensions array&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">y</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;y should be 2-dimensions array&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,</span> <span class="n">newaxis</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">y</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">[:,</span> <span class="n">newaxis</span><span class="p">]</span>
+
+        <span class="n">row_x</span><span class="p">,</span> <span class="n">col_x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">row_y</span><span class="p">,</span> <span class="n">col_y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="k">if</span> <span class="n">row_x</span> <span class="o">&lt;</span> <span class="n">col_x</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">reshape</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">col_x</span><span class="p">,</span> <span class="n">row_x</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">row_y</span> <span class="o">&lt;</span> <span class="n">col_y</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">reshape</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="p">(</span><span class="n">col_y</span><span class="p">,</span> <span class="n">row_y</span><span class="p">))</span>
+
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
+        <span class="n">r_ud</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_rate</span><span class="p">(</span><span class="n">peak_ratio</span><span class="p">)</span>
+
+        <span class="n">s</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="mf">0.618</span> <span class="o">*</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">legend_c</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+
+        <span class="n">up_down_rate</span> <span class="o">=</span> <span class="n">count_nonzero</span><span class="p">(</span><span class="n">y</span> <span class="o">&gt;=</span> <span class="n">z</span><span class="p">)</span> <span class="o">/</span> <span class="n">count_nonzero</span><span class="p">(</span><span class="n">y</span> <span class="o">&lt;</span> <span class="n">z</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">while</span> <span class="nb">abs</span><span class="p">(</span><span class="n">up_down_rate</span> <span class="o">-</span> <span class="n">r_ud</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">eps</span><span class="p">:</span>
+            <span class="n">old_s</span> <span class="o">=</span> <span class="n">s</span>
+            <span class="k">if</span> <span class="n">up_down_rate</span> <span class="o">-</span> <span class="n">r_ud</span> <span class="o">&gt;</span> <span class="n">eps</span><span class="p">:</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="n">s</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">b</span> <span class="o">=</span> <span class="n">s</span>
+
+            <span class="n">s</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="mf">0.618</span> <span class="o">*</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">legend_c</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+            <span class="n">up_down_rate</span> <span class="o">=</span> <span class="n">count_nonzero</span><span class="p">(</span><span class="n">y</span> <span class="o">&gt;=</span> <span class="n">z</span><span class="p">)</span> <span class="o">/</span> <span class="n">count_nonzero</span><span class="p">(</span><span class="n">y</span> <span class="o">&lt;</span> <span class="n">z</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">old_s</span> <span class="o">-</span> <span class="n">s</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.00001</span><span class="p">:</span>
+                <span class="k">break</span>
+
+            <span class="n">t</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">squeeze</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">legend_c</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">s</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Goldindec.t_rate"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.Goldindec.t_rate">[docs]</a>    <span class="k">def</span> <span class="nf">t_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute by cubic polynomial function. This function correlates the Up_Down_Ratio shows with the peak ratio, and this correlation is hardly influenced by the noise.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (float): value</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: 0.7679 + 11.2358 x - 39.7064 x ^ 2 + 92.3583 x ^ 3</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="mf">0.7679</span> <span class="o">+</span> <span class="mf">11.2358</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="mf">39.7064</span> <span class="o">*</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="mf">92.3583</span> <span class="o">*</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">3</span></div>
+
+<div class="viewcode-block" id="Goldindec.legend_c"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.Goldindec.legend_c">[docs]</a>    <span class="k">def</span> <span class="nf">legend_c</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute p-order coefficients and return fitted line.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (ndarray): Raman wave number. This array should be monotonically increasing and column vector.</span>
+<span class="sd">            y (ndarray): Raman intensity. This array should be column vector.</span>
+<span class="sd">            order (int): the polynomial order.</span>
+<span class="sd">            s (float): positively correlated with the noise standard deviation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [type]: [description]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="n">xmax</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">xmin</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">ymax</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">ymin</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">xmax</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">xmax</span> <span class="o">-</span> <span class="n">xmin</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># rescale to [-1, 1]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">ymax</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">ymax</span> <span class="o">-</span> <span class="n">ymin</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># rescale to [-1, 1]</span>
+
+        <span class="n">p</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="c1"># The Vandermonde matrix of wave number x.</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">tile</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">**</span> <span class="n">tile</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="n">Tinv</span> <span class="o">=</span> <span class="n">pinv</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">t</span><span class="p">)</span> <span class="o">@</span> <span class="n">t</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">Tinv</span> <span class="o">@</span> <span class="n">y</span>  <span class="c1"># The polynomial coefficients</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">t</span> <span class="o">@</span> <span class="n">a</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.99</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">2</span>
+
+        <span class="n">zp</span> <span class="o">=</span> <span class="n">ones</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>  <span class="c1"># an auxiliary vector to solve for &quot;a&quot;.</span>
+
+        <span class="k">while</span> <span class="nb">sum</span><span class="p">((</span><span class="n">z</span> <span class="o">-</span> <span class="n">zp</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">zp</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e-9</span><span class="p">:</span>
+            <span class="n">zp</span> <span class="o">=</span> <span class="n">z</span>
+            <span class="n">residual</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">z</span>
+
+            <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">residual</span><span class="p">[</span><span class="n">num</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">s</span><span class="p">:</span>
+                    <span class="n">d</span><span class="p">[</span><span class="n">num</span><span class="p">]</span> <span class="o">=</span> <span class="n">residual</span><span class="p">[</span><span class="n">num</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">alpha</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">residual</span><span class="p">[</span><span class="n">num</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">s</span><span class="p">:</span>
+                    <span class="n">d</span><span class="p">[</span><span class="n">num</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">residual</span><span class="p">[</span><span class="n">num</span><span class="p">]</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> \
+                        <span class="p">(</span><span class="n">s</span> <span class="o">**</span> <span class="mi">3</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">residual</span><span class="p">[</span><span class="n">num</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">Tinv</span> <span class="o">@</span> <span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="n">d</span><span class="p">)</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">t</span> <span class="o">@</span> <span class="n">a</span>
+
+        <span class="k">return</span> <span class="n">reshape</span><span class="p">((</span><span class="n">z</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">@</span> <span class="p">(</span><span class="n">ymax</span> <span class="o">-</span> <span class="n">ymin</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">ymax</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Goldindec.SendRequireParams"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.Goldindec.SendRequireParams">[docs]</a>    <span class="k">def</span> <span class="nf">SendRequireParams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;xyp&#39;</span></div>
+
+<div class="viewcode-block" id="Goldindec.SendReturnParams"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.Goldindec.SendReturnParams">[docs]</a>    <span class="k">def</span> <span class="nf">SendReturnParams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;ybp&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="PeakFind"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.PeakFind">[docs]</a><span class="k">class</span> <span class="nc">PeakFind</span><span class="p">(</span><span class="n">SpectrumFunctionContainerBase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">({</span>
+            <span class="s1">&#39;Height&#39;</span><span class="p">:</span> <span class="n">FloatContainer</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;Threshold&#39;</span><span class="p">:</span> <span class="n">FloatContainer</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;Distance&#39;</span><span class="p">:</span> <span class="n">FloatContainer</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;Prominence&#39;</span><span class="p">:</span> <span class="n">FloatContainer</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;Width&#39;</span><span class="p">:</span> <span class="n">FloatContainer</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="p">})</span>
+
+<div class="viewcode-block" id="PeakFind.Function"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.PeakFind.Function">[docs]</a>    <span class="k">def</span> <span class="nf">Function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">distance</span><span class="p">,</span> <span class="n">prominence</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">distance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">distance</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">distance</span> <span class="o">/</span> <span class="n">dx</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">width</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">width</span> <span class="o">/</span> <span class="n">dx</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="n">peak_index_list</span><span class="p">,</span> <span class="n">properties</span> <span class="o">=</span> <span class="n">find_peaks</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">distance</span><span class="p">,</span> <span class="n">prominence</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">plateau_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">peaks</span> <span class="o">=</span> <span class="n">PeakFunctionContainerList</span><span class="p">()</span>
+        <span class="n">peak_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_accessor</span><span class="o">.</span><span class="n">GetPeakType</span><span class="p">()</span>
+        <span class="n">widths</span> <span class="o">=</span> <span class="n">dx</span> <span class="o">*</span> <span class="n">properties</span><span class="p">[</span><span class="s1">&#39;widths&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">amp</span><span class="p">,</span> <span class="n">ctr</span><span class="p">,</span> <span class="n">wid</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">peak_index_list</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="n">peak_index_list</span><span class="p">],</span> <span class="n">widths</span><span class="p">):</span>
+
+            <span class="n">peak</span> <span class="o">=</span> <span class="n">peak_type</span><span class="o">.</span><span class="n">GetPeakInstance</span><span class="p">()</span>
+            <span class="n">peak</span><span class="o">.</span><span class="n">Amp</span> <span class="o">=</span> <span class="n">amp</span>
+            <span class="n">peak</span><span class="o">.</span><span class="n">Ctr</span> <span class="o">=</span> <span class="n">ctr</span>
+            <span class="n">peak</span><span class="o">.</span><span class="n">Wid</span> <span class="o">=</span> <span class="n">wid</span>
+
+            <span class="n">peaks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">peak</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">peaks</span><span class="p">,)</span></div>
+
+<div class="viewcode-block" id="PeakFind.SendRequireParams"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.PeakFind.SendRequireParams">[docs]</a>    <span class="k">def</span> <span class="nf">SendRequireParams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;xy&#39;</span></div>
+
+<div class="viewcode-block" id="PeakFind.SendReturnParams"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.PeakFind.SendReturnParams">[docs]</a>    <span class="k">def</span> <span class="nf">SendReturnParams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;p&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="PeakSetting"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.PeakSetting">[docs]</a><span class="k">class</span> <span class="nc">PeakSetting</span><span class="p">(</span><span class="n">SpectrumFunctionContainerBase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">({</span>
+            <span class="s1">&#39;Amplitude&#39;</span><span class="p">:</span> <span class="n">FloatContainer</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;Center&#39;</span><span class="p">:</span> <span class="n">FloatContainer</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;Width&#39;</span><span class="p">:</span> <span class="n">FloatContainer</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__arg_buffer</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="PeakSetting.Function"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.PeakSetting.Function">[docs]</a>    <span class="k">def</span> <span class="nf">Function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="n">peaks</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">peak_type</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_accessor</span><span class="o">.</span><span class="n">GetPeakType</span><span class="p">())</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">()</span>
+
+        <span class="n">peak</span> <span class="o">=</span> <span class="n">peak_type</span><span class="o">.</span><span class="n">GetPeakInstance</span><span class="p">()</span>
+        <span class="n">peak</span><span class="o">.</span><span class="n">SetArgs</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+
+        <span class="n">peaks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">peak</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">peaks</span><span class="p">,)</span></div>
+
+<div class="viewcode-block" id="PeakSetting.SendRequireParams"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.PeakSetting.SendRequireParams">[docs]</a>    <span class="k">def</span> <span class="nf">SendRequireParams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;p&#39;</span></div>
+
+<div class="viewcode-block" id="PeakSetting.SendReturnParams"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.PeakSetting.SendReturnParams">[docs]</a>    <span class="k">def</span> <span class="nf">SendReturnParams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;p&#39;</span></div>
+
+<div class="viewcode-block" id="PeakSetting.OnPeakTypeChanged"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.PeakSetting.OnPeakTypeChanged">[docs]</a>    <span class="k">def</span> <span class="nf">OnPeakTypeChanged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">peak_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_accessor</span><span class="o">.</span><span class="n">GetPeakType</span><span class="p">()</span>
+
+        <span class="n">container_name</span> <span class="o">=</span> <span class="n">peak_type</span><span class="o">.</span><span class="n">GetArgumentNames</span><span class="p">()</span>
+        <span class="n">container_list</span> <span class="o">=</span> <span class="n">peak_type</span><span class="o">.</span><span class="n">GetArgumentContainerList</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arg_container_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">container_name</span><span class="p">,</span> <span class="n">container_list</span><span class="p">)}</span></div></div>
+
+
+<div class="viewcode-block" id="CurveFit"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.CurveFit">[docs]</a><span class="k">class</span> <span class="nc">CurveFit</span><span class="p">(</span><span class="n">SpectrumFunctionContainerBase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__arg_buffer</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="CurveFit.Function"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.CurveFit.Function">[docs]</a>    <span class="k">def</span> <span class="nf">Function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">peak_type</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_accessor</span><span class="o">.</span><span class="n">GetPeakType</span><span class="p">())</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">()</span>
+
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">peaks</span><span class="p">,</span> <span class="o">*</span><span class="n">thresholds</span> <span class="o">=</span> <span class="n">args</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">peak_length</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">peaks</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">PeakFunctionContainerList</span><span class="p">()</span>
+
+        <span class="n">peak_arg_length</span> <span class="o">=</span> <span class="n">peak_type</span><span class="o">.</span><span class="n">GetArgumentLength</span><span class="p">()</span>
+
+        <span class="n">culc_y_func</span> <span class="o">=</span> <span class="n">peak_type</span><span class="o">.</span><span class="n">GetFunction</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">culc_spectrum_value</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="o">*</span><span class="n">param</span><span class="p">):</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">peak_length</span><span class="p">):</span>
+                <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">culc_y_func</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">param</span><span class="p">[</span><span class="n">peak_arg_length</span> <span class="o">*</span> <span class="n">n</span><span class="p">:</span> <span class="n">peak_arg_length</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]))</span>
+
+            <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+
+        <span class="n">lower_threshold</span> <span class="o">=</span> <span class="p">[</span><span class="n">inf</span> <span class="k">if</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">thresholds</span><span class="p">]</span>
+        <span class="n">upper_threshold</span> <span class="o">=</span> <span class="p">[</span><span class="n">inf</span> <span class="k">if</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">thresholds</span><span class="p">]</span>
+
+        <span class="n">lower_bounds</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">upper_bounds</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">peak</span> <span class="ow">in</span> <span class="n">peaks</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">lt</span><span class="p">,</span> <span class="n">ut</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">peak</span><span class="o">.</span><span class="n">GetArgumentContainerList</span><span class="p">(),</span> <span class="n">lower_threshold</span><span class="p">,</span> <span class="n">upper_threshold</span><span class="p">):</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span>
+                <span class="n">lb</span><span class="p">,</span> <span class="n">ub</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">GetBounds</span><span class="p">()</span>
+                <span class="n">lower_bounds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">v</span> <span class="o">-</span> <span class="n">lt</span><span class="p">,</span> <span class="n">lb</span><span class="p">))</span>
+                <span class="n">upper_bounds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">v</span> <span class="o">+</span> <span class="n">ut</span><span class="p">,</span> <span class="n">ub</span><span class="p">))</span>
+
+        <span class="n">bounds</span> <span class="o">=</span> <span class="p">[</span><span class="n">lower_bounds</span><span class="p">,</span> <span class="n">upper_bounds</span><span class="p">]</span>
+        <span class="n">p0</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="n">peak</span><span class="o">.</span><span class="n">GetArgs</span><span class="p">())</span> <span class="k">for</span> <span class="n">peak</span> <span class="ow">in</span> <span class="n">peaks</span><span class="p">],</span> <span class="p">[])</span>
+
+        <span class="n">popt</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">culc_spectrum_value</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">check_finite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">peak</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">peaks</span><span class="p">):</span>
+            <span class="n">peak</span><span class="o">.</span><span class="n">SetArgs</span><span class="p">(</span><span class="n">popt</span><span class="p">[</span><span class="n">peak_arg_length</span> <span class="o">*</span> <span class="n">n</span><span class="p">:</span> <span class="n">peak_arg_length</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)])</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">peaks</span><span class="p">,)</span></div>
+
+<div class="viewcode-block" id="CurveFit.SendRequireParams"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.CurveFit.SendRequireParams">[docs]</a>    <span class="k">def</span> <span class="nf">SendRequireParams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;xyp&#39;</span></div>
+
+<div class="viewcode-block" id="CurveFit.SendReturnParams"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.CurveFit.SendReturnParams">[docs]</a>    <span class="k">def</span> <span class="nf">SendReturnParams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;p&#39;</span></div>
+
+<div class="viewcode-block" id="CurveFit.OnPeakTypeChanged"><a class="viewcode-back" href="../../isatec.html#isatec.defaultspectrumfunction.CurveFit.OnPeakTypeChanged">[docs]</a>    <span class="k">def</span> <span class="nf">OnPeakTypeChanged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">peak_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_accessor</span><span class="o">.</span><span class="n">GetPeakType</span><span class="p">()</span>
+
+        <span class="n">arg_names</span> <span class="o">=</span> <span class="n">peak_type</span><span class="o">.</span><span class="n">GetArgumentNames</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arg_container_dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">arg_names</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; threshold&#39;</span>
+
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__arg_buffer</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">arg_container_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__arg_buffer</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="k">continue</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">arg_container_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ListArgumentContainer</span><span class="p">([</span><span class="n">OptionalFloatContainer</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">OptionalFloatContainer</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">)])</span></div></div>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;Clipping&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Smooth&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Normalize&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;SavgolFilter&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Goldindec&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;PeakFind&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;PeakSetting&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;CurveFit&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Ryo Tandai.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
